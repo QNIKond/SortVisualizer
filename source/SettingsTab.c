@@ -16,6 +16,7 @@ void UpdateDrawTabHeads(SConfig *sconf, Rectangle bounds){
         if(GuiButton((Rectangle){bounds.x + bounds.width/2,bounds.y,bounds.width/2,LINEHEIGHT},""))
             sconf->currentTab = 1;
     }
+
     GuiSetStyle(DEFAULT,TEXT_ALIGNMENT,TEXT_ALIGN_MIDDLE);
     GuiLabel((Rectangle){bounds.x,bounds.y,bounds.width/2,LINEHEIGHT},"Visualisation");
     GuiLabel((Rectangle){bounds.x + bounds.width/2,bounds.y,bounds.width/2,LINEHEIGHT},"Prophiling");
@@ -63,9 +64,9 @@ void UpdateDrawDropdown(Rectangle *bounds, const char *text, const char* options
     bounds->y -= LINEHEIGHT;
 }
 
-void UpdateDrawSubButton(Rectangle *bounds, int pos, const char *text, Color color){
+void UpdateDrawSubButton(Rectangle *bounds, int pos, const char *text, int color){
     int defaultColor = GuiGetStyle(BUTTON,BASE_COLOR_NORMAL);
-    GuiSetStyle(BUTTON,BASE_COLOR_NORMAL, ColorToInt(color));
+    GuiSetStyle(BUTTON,BASE_COLOR_NORMAL, color);
     GuiSetStyle(DEFAULT,TEXT_ALIGNMENT,TEXT_ALIGN_MIDDLE);
     GuiButton((Rectangle){bounds->x+bounds->width-(LINEHEIGHT+PADDING)*(pos)-LINEHEIGHT, bounds->y,
                              LINEHEIGHT,LINEHEIGHT},text) ;
@@ -87,8 +88,8 @@ void UpdateDrawVisTab(SConfig *sconf, Rectangle bounds){
     UpdateDrawCheckBox(&bounds,"Show shuffling",&sconf->showShuffling);
     UpdateDrawSlider(&bounds,"Animation length(s):",&sconf->animationLength,0,ANIMLENMAX,&tbstates[0]);
     DrawSplitter(&bounds);
-    UpdateDrawSubButton(&bounds,0,"",sconf->col2);
-    UpdateDrawSubButton(&bounds,1,"",sconf->col1);
+    UpdateDrawSubButton(&bounds,0,"", ColorToInt(sconf->col2));
+    UpdateDrawSubButton(&bounds,1,"",ColorToInt(sconf->col1));
     UpdateDrawDropdown(&bounds,"Coloring","Plain;Gradient;Rainbow",&sconf->coloring,2,&tbstates[1]);
     UpdateDrawCheckBox(&bounds,"Mirrored",&sconf->mirrored);
     UpdateDrawCheckBox(&bounds,"Connected dots",&sconf->connectedDots);
@@ -101,7 +102,7 @@ void UpdateDrawVisTab(SConfig *sconf, Rectangle bounds){
     UpdateDrawSlider(&bounds,"Array modifier:",&sconf->arrayModifier,0,100,&tbstates[4]);
     UpdateDrawSlider(&bounds,"Array size:",&sconf->arraySize,0,4000,&tbstates[5]);
     UpdateDrawDropdown(&bounds,"Input array","Linear;Square root",&sconf->inputArray,0,&tbstates[6]);
-    UpdateDrawSubButton(&bounds,0,"?",LIGHTGRAY);
+    UpdateDrawSubButton(&bounds,0,"?", GuiGetStyle(BUTTON,BASE_COLOR_NORMAL));
     UpdateDrawDropdown(&bounds,"Sorting algorithm","Bubble sort; Shaker sort; Gravity sort",&sconf->sortingAlgorithm,1,&tbstates[7]);
 }
 
@@ -110,7 +111,7 @@ void UpdateDrawProphTab(SConfig *sconf, Rectangle bounds){
 }
 
 void UpdateDrawSettingTab(SConfig *sconf, Rectangle bounds){
-    DrawRectangleRec(bounds,LIGHTGRAY);
+    DrawRectangleRec(bounds,(Color){0x3c,0x3c,0x3c,0xFF});
     UpdateDrawTabHeads(sconf, bounds);
     bounds.y += LINEHEIGHT*2;
     bounds.height -= LINEHEIGHT*2;
