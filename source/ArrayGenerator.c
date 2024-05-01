@@ -2,21 +2,21 @@
 #include "malloc.h"
 
 void GenerateLinear(SConfig *sconf,InputArray *input){
-    for(int i = 0; i < sconf->arraySize; ++i)
+    for(int i = 0; i < sconf->as.arraySize; ++i)
         input->arr[i] = i;
 
 }
 
 void UpdateInputArray(SConfig *sconf, InputArray *input){
     if(!input->arr) {
-        input->arr = calloc(sconf->arraySize, sizeof(InputArray));
-        input->size = sconf->arraySize;
+        input->arr = calloc(sconf->as.arraySize, sizeof(int));
+        input->size = sconf->as.arraySize;
     }
-    else if(input->size<sconf->arraySize) {
-        input->arr = realloc(input->arr, sconf->arraySize);
-        input->size = sconf->arraySize;
+    else if(input->size<sconf->as.arraySize) {
+        input->arr = realloc(input->arr, sconf->as.arraySize*sizeof(int));
+        input->size = sconf->as.arraySize;
     }
-    switch(sconf->inputArrayFunction){
+    switch(sconf->as.inputArrayFunction){
 
         case LinearArray:
             GenerateLinear(sconf,input);

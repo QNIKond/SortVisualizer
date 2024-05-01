@@ -2,17 +2,32 @@
 
 void InitializeSortConfig(SConfig *sconfig){
     *sconfig = (SConfig){0};
-    sconfig->arraySize = 40;
-    sconfig->showValueAsLength = true;
-    sconfig->col1 = WHITE;
-    sconfig->col2 = RED;
-    sconfig->animationLength = 15;
-    sconfig->showShuffling = true;
-    sconfig->showProgressBars = true;
+    sconfig->as.arraySize = 40;
+    sconfig->vs.showValueAsLength = true;
+    sconfig->vs.col1 = WHITE;
+    sconfig->vs.col2 = RED;
+    sconfig->vs.animationLength = 15;
+    sconfig->vs.showShuffling = true;
+    sconfig->vs.showProgressBars = true;
+    sconfig->isInInitState = true;
 }
 
-void UpdateSConfig(SConfig *dst, SConfig *src){
-    if((dst->sortingAlgorithm != src->sortingAlgorithm) ||
-            (dst->inputArrayFunction != src->inputArrayFunction) ||
-            (dst->sortingAlgorithm != src->sortingAlgorithm) ||)
+bool isEqual(char *a, char *b, int size){
+    for(int i = 0; i < size; ++i)
+        if(*(a+i) != *(b+i))
+            return false;
+    return true;
+}
+
+int SyncConfigs(SConfig *back, SConfig *front){
+    back->vs = front->vs;
+    if(!isEqual((char*)&back->as,(char*)&front->as,sizeof(front->as))) {
+        if (back->isInInitState) {
+            back->needsReloading = false;
+            back->as = front->as;
+            return 1;
+        } else
+            back->needsReloading = true;
+    }
+    return 0;
 }

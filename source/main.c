@@ -61,6 +61,8 @@ void UpdateDrawFrame(void)
     BeginDrawing();
     ClearBackground((Color) {0x2c,0x2c,0x2c,0xff});
     UpdateDrawSettingTab(&frontEnd, (Rectangle){0, 0, 200, GetScreenHeight()});
+    if(SyncConfigs(&backEnd,&frontEnd))
+        ShuffleArray(&backEnd, &arr);
     DrawArray((Rectangle){200,0,GetScreenWidth()-200,GetScreenHeight()}, &backEnd, &arr);
     if(IsKeyPressed(KEY_R))
         ShuffleArray(&backEnd, &arr);

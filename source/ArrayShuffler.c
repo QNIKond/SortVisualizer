@@ -2,9 +2,9 @@
 #include "stdlib.h"
 
 void ShuffleRandom(SConfig *sconf, InputArray *input){
-    for(int i = 0; i < sconf->arraySize; ++i){
+    for(int i = 0; i < sconf->as.arraySize; ++i){
         int t = input->arr[i];
-        int r = rand()%sconf->arraySize;
+        int r = rand()%sconf->as.arraySize;
         input->arr[i] = input->arr[r];
         input->arr[r] = t;
     }
@@ -12,7 +12,7 @@ void ShuffleRandom(SConfig *sconf, InputArray *input){
 
 void ShuffleArray(SConfig *sconf, InputArray *input){
     UpdateInputArray(sconf,input);
-    switch (sconf->shufflingAlgorithm) {
+    switch (sconf->as.shufflingAlgorithm) {
 
         case RandomShuffle:
             ShuffleRandom(sconf,input);

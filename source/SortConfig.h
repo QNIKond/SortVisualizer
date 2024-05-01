@@ -30,27 +30,33 @@ typedef enum {
 #define ANIMLENMIN 2
 #define ANIMLENMAX 100
 typedef struct{
-    SortingAlgorithm sortingAlgorithm;
-    InputArrayFunction inputArrayFunction;
-    int arraySize;
-    int arrayModifier;
-    ShufflingAlgorithm shufflingAlgorithm;
-    Visualisation visualisation;
-    bool disparity;
-    bool showValueAsLength;
-    bool hollow;
-    bool connectedDots;
-    bool mirrored;
-    Coloring coloring;
-    Color col1;
-    Color col2;
-    int animationLength;
-    bool showShuffling;
-    bool showProgressBars;
-    bool showInfo;
+    struct {
+        SortingAlgorithm sortingAlgorithm;
+        InputArrayFunction inputArrayFunction;
+        int arraySize;
+        int arrayModifier;
+        ShufflingAlgorithm shufflingAlgorithm;
+    } as;
+    struct {
+        Visualisation visualisation;
+        bool disparity;
+        bool showValueAsLength;
+        bool hollow;
+        bool connectedDots;
+        bool mirrored;
+        Coloring coloring;
+        Color col1;
+        Color col2;
+        int animationLength;
+        bool showShuffling;
+        bool showProgressBars;
+        bool showInfo;
+    } vs;
     bool currentTab;
+    bool isInInitState;
+    bool needsReloading;
 } SConfig;
 
 void InitializeSortConfig(SConfig *sconfig);
 
-void UpdateSConfig(SConfig *dst, SConfig *src);
+int SyncConfigs(SConfig *back, SConfig *front);
