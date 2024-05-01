@@ -2,24 +2,24 @@
 #include "../raygui.h"
 
 #define LINEHEIGHT 24
+#define BIGBUTTONHEIGHT (LINEHEIGHT*1.5)
 #define VPADDING 3
-#define VISLINESCOUNT 24//26
+#define VISLINESCOUNT 25//26
 #define TEXTBOXWIDTH 80
 #define PADDING 10
 
 void UpdateDrawTabHeads(SConfig *sconf, Rectangle bounds){
     if(sconf->currentTab){
-        if(GuiButton((Rectangle){bounds.x,bounds.y,bounds.width/2,LINEHEIGHT},""))
+        if(GuiButton((Rectangle){bounds.x,bounds.y,bounds.width/2,BIGBUTTONHEIGHT},""))
             sconf->currentTab = 0;
     }
     else{
-        if(GuiButton((Rectangle){bounds.x + bounds.width/2,bounds.y,bounds.width/2,LINEHEIGHT},""))
+        if(GuiButton((Rectangle){bounds.x + bounds.width/2,bounds.y,bounds.width/2,BIGBUTTONHEIGHT},""))
             sconf->currentTab = 1;
     }
-
     GuiSetStyle(DEFAULT,TEXT_ALIGNMENT,TEXT_ALIGN_MIDDLE);
-    GuiLabel((Rectangle){bounds.x,bounds.y,bounds.width/2,LINEHEIGHT},"Visualisation");
-    GuiLabel((Rectangle){bounds.x + bounds.width/2,bounds.y,bounds.width/2,LINEHEIGHT},"Prophiling");
+    GuiLabel((Rectangle){bounds.x,bounds.y,bounds.width/2,BIGBUTTONHEIGHT},"Visualisation");
+    GuiLabel((Rectangle){bounds.x + bounds.width/2,bounds.y,bounds.width/2,BIGBUTTONHEIGHT},"Prophiling");
     GuiSetStyle(DEFAULT,TEXT_ALIGNMENT,TEXT_ALIGN_LEFT);
 }
 
@@ -83,6 +83,12 @@ void UpdateDrawVisTab(SConfig *sconf, Rectangle bounds){
     static  bool tbstates[8] = {0};
     bounds.height = LINEHEIGHT;
     bounds.y += LINEHEIGHT*VISLINESCOUNT;
+    GuiSetStyle(DEFAULT,TEXT_ALIGNMENT,TEXT_ALIGN_MIDDLE);
+    GuiButton((Rectangle){bounds.x,GetScreenHeight()-PADDING-BIGBUTTONHEIGHT,
+                          (bounds.width-PADDING)/2, BIGBUTTONHEIGHT}, "RUN");
+    GuiButton((Rectangle){PADDING/2 + bounds.width/2+bounds.x,GetScreenHeight()-PADDING-BIGBUTTONHEIGHT,
+                          (bounds.width-PADDING)/2, BIGBUTTONHEIGHT},"RESET");
+    GuiSetStyle(DEFAULT,TEXT_ALIGNMENT,TEXT_ALIGN_LEFT);
     UpdateDrawCheckBox(&bounds,"Show info",&sconf->showInfo);
     UpdateDrawCheckBox(&bounds,"Show progress bars",&sconf->showProgressBars);
     UpdateDrawCheckBox(&bounds,"Show shuffling",&sconf->showShuffling);
@@ -101,7 +107,7 @@ void UpdateDrawVisTab(SConfig *sconf, Rectangle bounds){
     UpdateDrawDropdown(&bounds,"Shuffling algorithm","Random;Slight",&sconf->shufflingAlgorithm,0,&tbstates[3]);
     UpdateDrawSlider(&bounds,"Array modifier:",&sconf->arrayModifier,0,100,&tbstates[4]);
     UpdateDrawSlider(&bounds,"Array size:",&sconf->arraySize,0,4000,&tbstates[5]);
-    UpdateDrawDropdown(&bounds,"Input array","Linear;Square root",&sconf->inputArray,0,&tbstates[6]);
+    UpdateDrawDropdown(&bounds, "Input array", "Linear;Square root", &sconf->inputArrayFunction, 0, &tbstates[6]);
     UpdateDrawSubButton(&bounds,0,"?", GuiGetStyle(BUTTON,BASE_COLOR_NORMAL));
     UpdateDrawDropdown(&bounds,"Sorting algorithm","Bubble sort; Shaker sort; Gravity sort",&sconf->sortingAlgorithm,1,&tbstates[7]);
 }

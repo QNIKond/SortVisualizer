@@ -10,3 +10,9 @@ void InitializeSortConfig(SConfig *sconfig){
     sconfig->showShuffling = true;
     sconfig->showProgressBars = true;
 }
+
+void UpdateSConfig(SConfig *dst, SConfig *src){
+    if((dst->sortingAlgorithm != src->sortingAlgorithm) ||
+            (dst->inputArrayFunction != src->inputArrayFunction) ||
+            (dst->sortingAlgorithm != src->sortingAlgorithm) ||)
+}

@@ -9,7 +9,7 @@ typedef enum {
 typedef enum {
     LinearArray,
     SqareRootArray
-}InputArray;
+}InputArrayFunction;
 
 typedef enum {
     RandomShuffle,
@@ -31,8 +31,7 @@ typedef enum {
 #define ANIMLENMAX 100
 typedef struct{
     SortingAlgorithm sortingAlgorithm;
-    InputArray inputArray;
-    int *array;
+    InputArrayFunction inputArrayFunction;
     int arraySize;
     int arrayModifier;
     ShufflingAlgorithm shufflingAlgorithm;
@@ -53,3 +52,5 @@ typedef struct{
 } SConfig;
 
 void InitializeSortConfig(SConfig *sconfig);
+
+void UpdateSConfig(SConfig *dst, SConfig *src);

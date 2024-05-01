@@ -577,13 +577,12 @@ static void GuiLoadStyleDark(void)
 
     GuiSetFont(font);
 
-    // Setup a white rectangle on the font to be used on shapes drawing,
+    // Set up a white rectangle on the font to be used on shapes drawing,
     // it makes possible to draw shapes and text (full UI) in a single draw call
     Rectangle fontWhiteRec = { 510, 254, 1, 1 };
     SetShapesTexture(font.texture, fontWhiteRec);
 
     //-----------------------------------------------------------------
 
-    // TODO: Custom user style setup: Set specific properties here (if required)
     // i.e. Controls specific BORDER_WIDTH, TEXT_PADDING, TEXT_ALIGNMENT
 }

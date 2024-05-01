@@ -4,12 +4,16 @@
 #include "SortConfig.h"
 #include "SettingsTab.h"
 #include "../darkTheme.h"
+#include "SortVisualiser.h"
+#include "ArrayShuffler.h"
 
 int screenWidth = 1200;
 int screenHeight = 800;
 void UpdateDrawFrame(void);
 
-SConfig sc;
+SConfig frontEnd;
+SConfig backEnd;
+InputArray arr = {0};
 Image icon;
 
 void LoadIcon(){
@@ -23,6 +27,14 @@ void LoadIcon(){
     SetWindowIcon(icon);
 }
 
+typedef struct{
+   int ert;
+   struct R{
+       int q;
+       int e;
+   } r;
+} A;
+
 int main()
 {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
@@ -30,15 +42,17 @@ int main()
     SetTargetFPS(60);
     SetExitKey(KEY_NULL);
     LoadIcon();
-
-
     GuiLoadStyleDark();
-    InitializeSortConfig(&sc);
+
+    InitializeSortConfig(&frontEnd);
+    InitializeSortConfig(&backEnd);
+    ShuffleArray(&frontEnd, &arr);
     while (!WindowShouldClose())
     {
         UpdateDrawFrame();
     }
     UnloadImage(icon);
+    FreeInputArray(&arr);
     return 0;
 }
 
@@ -46,6 +60,9 @@ void UpdateDrawFrame(void)
 {
     BeginDrawing();
     ClearBackground((Color) {0x2c,0x2c,0x2c,0xff});
-    UpdateDrawSettingTab(&sc,(Rectangle){0,0,200,GetScreenHeight()});
+    UpdateDrawSettingTab(&frontEnd, (Rectangle){0, 0, 200, GetScreenHeight()});
+    DrawArray((Rectangle){200,0,GetScreenWidth()-200,GetScreenHeight()}, &backEnd, &arr);
+    if(IsKeyPressed(KEY_R))
+        ShuffleArray(&backEnd, &arr);
     EndDrawing();
 }

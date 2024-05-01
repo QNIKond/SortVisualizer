@@ -31,7 +31,13 @@ add_executable(${PROJECT_NAME} source/main.c
         source/SortConfig.c
         source/SortConfig.h
         source/SettingsTab.c
-        source/SettingsTab.h)
+        source/SettingsTab.h
+        source/SortVisualiser.c
+        source/SortVisualiser.h
+        source/ArrayGenerator.c
+        source/ArrayGenerator.h
+        source/ArrayShuffler.c
+        source/ArrayShuffler.h)
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)
 
