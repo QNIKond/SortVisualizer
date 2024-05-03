@@ -53,12 +53,14 @@ typedef struct{
         bool showShuffling;
         bool showProgressBars;
         bool showInfo;
+
+        bool isOnPause;
     } vs;
     bool currentTab;
     bool needsReloading;
     /*bool isInInitState;
-    bool isOver;
-    bool isOnPause;*/
+    bool isOver;*/
+
     enum {
         AnimStart = 0,
         AnimShuffling,
@@ -66,7 +68,7 @@ typedef struct{
         AnimEnd
     } animState;
 } SConfig;
-
+#define ANIMRUNNING(X) (((X)==AnimSorting) || ((X)==AnimShuffling))
 void InitializeSortConfig(SConfig *sconfig);
 
 int SyncConfigs(SConfig *back, SConfig *front);

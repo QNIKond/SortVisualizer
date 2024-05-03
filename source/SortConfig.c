@@ -25,8 +25,8 @@ int SyncConfigs(SConfig *back, SConfig *front){
         shouldReload = true;
     }
     front->needsReloading = back->needsReloading;
-    if(((front->animState == AnimStart) ||
-            (front->animState == AnimShuffling)) && (back->animState != front->animState)){
+    if(((front->animState == AnimStart) && (back->animState != AnimStart)) ||
+            ((front->animState == AnimShuffling) && !ANIMRUNNING(back->animState))){
         back->animState = front->animState;
         shouldReload = true;
     }

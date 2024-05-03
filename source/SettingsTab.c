@@ -85,15 +85,25 @@ void DrawSplitter(Rectangle *bounds){
 
 void DrawStartResetButtons(SConfig *sconf, Rectangle *bounds){
     GuiSetStyle(DEFAULT,TEXT_ALIGNMENT,TEXT_ALIGN_MIDDLE);
-    if(GuiButton((Rectangle){bounds->x,GetScreenHeight()-PADDING-BIGBUTTONHEIGHT,
-                          (bounds->width-PADDING)/2, BIGBUTTONHEIGHT}, "RUN"))
-        sconf->animState = AnimShuffling;
+    if(ANIMRUNNING(sconf->animState)) {
+        if (GuiButton((Rectangle) {bounds->x, GetScreenHeight() - PADDING - BIGBUTTONHEIGHT,
+                                   (bounds->width - PADDING) / 2, BIGBUTTONHEIGHT}, sconf->vs.isOnPause ? "RUN" : "STOP"))
+            sconf->vs.isOnPause = !sconf->vs.isOnPause;
+    }
+    else{
+        if (GuiButton((Rectangle) {bounds->x, GetScreenHeight() - PADDING - BIGBUTTONHEIGHT,
+                                   (bounds->width - PADDING) / 2, BIGBUTTONHEIGHT}, "RUN"))
+            sconf->animState = AnimShuffling;
+    }
+
     int defaultColor = GuiGetStyle(BUTTON,BASE_COLOR_NORMAL);
     if(sconf->needsReloading)
         GuiSetStyle(BUTTON,BASE_COLOR_NORMAL, ALARMCOLOR);
     if(GuiButton((Rectangle){PADDING/2 + bounds->width/2+bounds->x,GetScreenHeight()-PADDING-BIGBUTTONHEIGHT,
-                          (bounds->width-PADDING)/2, BIGBUTTONHEIGHT},"RESET"))
+                          (bounds->width-PADDING)/2, BIGBUTTONHEIGHT},"RESET")) {
         sconf->animState = AnimStart;
+        sconf->vs.isOnPause = false;
+    }
     GuiSetStyle(BUTTON,BASE_COLOR_NORMAL, defaultColor);
 }
 

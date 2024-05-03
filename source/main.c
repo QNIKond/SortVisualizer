@@ -59,16 +59,17 @@ void UpdateDrawFrame(void)
         ResetSorters();
         UpdateInputArray(&backEnd, &arr);
     }
-    if(backEnd.animState == AnimShuffling){
-        if(StepShuffleArray(&backEnd,&arr)) {
-            backEnd.animState = AnimSorting;
-            frontEnd.animState = AnimSorting;
-        }
-    }
-    else if(backEnd.animState == AnimSorting){
-        if(StepSortArray(&backEnd,&arr)) {
-            backEnd.animState = AnimEnd;
-            frontEnd.animState = AnimEnd;
+    if(!backEnd.vs.isOnPause) {
+        if (backEnd.animState == AnimShuffling) {
+            if (StepShuffleArray(&backEnd, &arr)) {
+                backEnd.animState = AnimSorting;
+                frontEnd.animState = AnimSorting;
+            }
+        } else if (backEnd.animState == AnimSorting) {
+            if (StepSortArray(&backEnd, &arr)) {
+                backEnd.animState = AnimEnd;
+                frontEnd.animState = AnimEnd;
+            }
         }
     }
     DrawArray((Rectangle){200,0,GetScreenWidth()-200,GetScreenHeight()}, &backEnd, &arr);
