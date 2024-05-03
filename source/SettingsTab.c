@@ -7,6 +7,7 @@
 #define VISLINESCOUNT 25//26
 #define TEXTBOXWIDTH 80
 #define PADDING 10
+#define ALARMCOLOR 0xDD1111FF
 
 void UpdateDrawTabHeads(SConfig *sconf, Rectangle bounds){
     if(sconf->currentTab){
@@ -30,24 +31,26 @@ void UpdateDrawCheckBox(Rectangle *bounds, const char *text, bool *data){
     bounds->y -= LINEHEIGHT;
 }
 
-void UpdateDrawSlider(Rectangle *bounds, const char *text, int *data, const int min, const int max, bool *state){
+int UpdateDrawSlider(Rectangle *bounds, const char *text, int *data, const int min, const int max, bool *state){
     float value = (float)*data;
     Rectangle sliderRect = {bounds->x,bounds->y+VPADDING,bounds->width-PADDING-TEXTBOXWIDTH,LINEHEIGHT-VPADDING*2};
     DrawLine(sliderRect.x,sliderRect.y+sliderRect.height/2,
              sliderRect.x+sliderRect.width,sliderRect.y+sliderRect.height/2,BLACK);
-    GuiSlider(sliderRect,"","",&value,(float)min,(float)max);
+    int changed = GuiSlider(sliderRect,"","",&value,(float)min,(float)max);
 
     *data = (int)value;
-    //GuiTextBox((Rectangle){bounds->x + bounds->width-TEXTBOXWIDTH,bounds->y,TEXTBOXWIDTH},)
     if(GuiValueBox((Rectangle){bounds->x + bounds->width-TEXTBOXWIDTH,bounds->y+VPADDING
-                               ,TEXTBOXWIDTH,LINEHEIGHT-VPADDING*2},"",data,min,max,*state))
+                               ,TEXTBOXWIDTH,LINEHEIGHT-VPADDING*2},"",data,min,max,*state)) {
         *state = !*state;
+        changed = true;
+    }
     bounds->y -= LINEHEIGHT;
     GuiLabel(*bounds,text);
     bounds->y -= LINEHEIGHT;
+    return changed;
 }
-void UpdateDrawDropdown(Rectangle *bounds, const char *text, const char* options, int *data, int subButtons, bool *state){
-    int isLocked = 0;
+int UpdateDrawDropdown(Rectangle *bounds, const char *text, const char* options, int *data, int subButtons, bool *state){
+    int prevData = *data;
     if(GuiDropdownBox((Rectangle){bounds->x,bounds->y,bounds->width - (LINEHEIGHT+PADDING)*subButtons,LINEHEIGHT}, options,
                    data, *state)) {
         if(*state){
@@ -62,6 +65,7 @@ void UpdateDrawDropdown(Rectangle *bounds, const char *text, const char* options
     bounds->y -= LINEHEIGHT;
     GuiLabel(*bounds,text);
     bounds->y -= LINEHEIGHT;
+    return prevData != *data;
 }
 
 void UpdateDrawSubButton(Rectangle *bounds, int pos, const char *text, int color){
@@ -79,15 +83,25 @@ void DrawSplitter(Rectangle *bounds){
     bounds->y -= LINEHEIGHT;
 }
 
+void DrawStartResetButtons(SConfig *sconf, Rectangle *bounds){
+    GuiSetStyle(DEFAULT,TEXT_ALIGNMENT,TEXT_ALIGN_MIDDLE);
+    if(GuiButton((Rectangle){bounds->x,GetScreenHeight()-PADDING-BIGBUTTONHEIGHT,
+                          (bounds->width-PADDING)/2, BIGBUTTONHEIGHT}, "RUN"))
+        sconf->animState = AnimShuffling;
+    int defaultColor = GuiGetStyle(BUTTON,BASE_COLOR_NORMAL);
+    if(sconf->needsReloading)
+        GuiSetStyle(BUTTON,BASE_COLOR_NORMAL, ALARMCOLOR);
+    if(GuiButton((Rectangle){PADDING/2 + bounds->width/2+bounds->x,GetScreenHeight()-PADDING-BIGBUTTONHEIGHT,
+                          (bounds->width-PADDING)/2, BIGBUTTONHEIGHT},"RESET"))
+        sconf->animState = AnimStart;
+    GuiSetStyle(BUTTON,BASE_COLOR_NORMAL, defaultColor);
+}
+
 void UpdateDrawVisTab(SConfig *sconf, Rectangle bounds){
     static  bool tbstates[8] = {0};
     bounds.height = LINEHEIGHT;
     bounds.y += LINEHEIGHT*VISLINESCOUNT;
-    GuiSetStyle(DEFAULT,TEXT_ALIGNMENT,TEXT_ALIGN_MIDDLE);
-    GuiButton((Rectangle){bounds.x,GetScreenHeight()-PADDING-BIGBUTTONHEIGHT,
-                          (bounds.width-PADDING)/2, BIGBUTTONHEIGHT}, "RUN");
-    GuiButton((Rectangle){PADDING/2 + bounds.width/2+bounds.x,GetScreenHeight()-PADDING-BIGBUTTONHEIGHT,
-                          (bounds.width-PADDING)/2, BIGBUTTONHEIGHT},"RESET");
+    DrawStartResetButtons(sconf,&bounds);
     GuiSetStyle(DEFAULT,TEXT_ALIGNMENT,TEXT_ALIGN_LEFT);
     UpdateDrawCheckBox(&bounds,"Show info",&sconf->vs.showInfo);
     UpdateDrawCheckBox(&bounds,"Show progress bars",&sconf->vs.showProgressBars);
@@ -104,12 +118,13 @@ void UpdateDrawVisTab(SConfig *sconf, Rectangle bounds){
     UpdateDrawCheckBox(&bounds,"Disparity",&sconf->vs.disparity);
     UpdateDrawDropdown(&bounds,"Visualisation","Bars;Pyramid;Circle",&sconf->vs.visualisation,0,&tbstates[2]);
     DrawSplitter(&bounds);
-    UpdateDrawDropdown(&bounds,"Shuffling algorithm","Random;Slight",&sconf->as.shufflingAlgorithm,0,&tbstates[3]);
-    UpdateDrawSlider(&bounds,"Array modifier:",&sconf->as.arrayModifier,0,100,&tbstates[4]);
-    UpdateDrawSlider(&bounds,"Array size:",&sconf->as.arraySize,0,4000,&tbstates[5]);
-    UpdateDrawDropdown(&bounds, "Input array", "Linear;Square root", &sconf->as.inputArrayFunction, 0, &tbstates[6]);
+
+    sconf->as.updated |= UpdateDrawDropdown(&bounds,"Shuffling algorithm","Random;Slight",&sconf->as.shufflingAlgorithm,0,&tbstates[3]);
+    sconf->as.updated |= UpdateDrawSlider(&bounds,"Array modifier:",&sconf->as.arrayModifier,0,100,&tbstates[4]);
+    sconf->as.updated |= UpdateDrawSlider(&bounds,"Array size:",&sconf->as.arraySize,5,4000,&tbstates[5]);
+    sconf->as.updated |= UpdateDrawDropdown(&bounds, "Input array", "Linear;Square root", &sconf->as.inputArrayFunction, 0, &tbstates[6]);
     UpdateDrawSubButton(&bounds,0,"?", GuiGetStyle(BUTTON,BASE_COLOR_NORMAL));
-    UpdateDrawDropdown(&bounds,"Sorting algorithm","Bubble sort; Shaker sort; Gravity sort",&sconf->as.sortingAlgorithm,1,&tbstates[7]);
+    sconf->as.updated |= UpdateDrawDropdown(&bounds,"Sorting algorithm","Bubble sort; Shaker sort; Gravity sort",&sconf->as.sortingAlgorithm,1,&tbstates[7]);
 }
 
 void UpdateDrawProphTab(SConfig *sconf, Rectangle bounds){

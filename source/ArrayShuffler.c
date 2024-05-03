@@ -1,23 +1,32 @@
 #include "ArrayShuffler.h"
 #include "stdlib.h"
 
-void ShuffleRandom(SConfig *sconf, InputArray *input){
-    for(int i = 0; i < sconf->as.arraySize; ++i){
-        int t = input->arr[i];
-        int r = rand()%sconf->as.arraySize;
-        input->arr[i] = input->arr[r];
-        input->arr[r] = t;
-    }
+struct SUShared{
+    int i;
+} suShared;
+
+int StepShuffleRandom(SConfig *sconf, InputArray *input){
+    int t = input->arr[suShared.i];
+    int r = rand()%sconf->as.arraySize;
+    input->arr[suShared.i] = input->arr[r];
+    input->arr[r] = t;
+    ++suShared.i;
+    if(suShared.i >= sconf->as.arraySize)
+        return 1;
+    return 0;
 }
 
-void ShuffleArray(SConfig *sconf, InputArray *input){
-    UpdateInputArray(sconf,input);
+int StepShuffleArray(SConfig *sconf, InputArray *input){
     switch (sconf->as.shufflingAlgorithm) {
 
         case RandomShuffle:
-            ShuffleRandom(sconf,input);
+            return StepShuffleRandom(sconf, input);
             break;
         case SlightShuffle:
-            break;
+            return 0;
     }
+}
+
+void ResetShufflers(){
+    suShared = (struct SUShared){0};
 }

@@ -1,4 +1,6 @@
 #pragma once
 #include "ArrayGenerator.h"
 
-void ShuffleArray(SConfig *sconf, InputArray *input);
+int StepShuffleArray(SConfig *sconf, InputArray *input);
+
+void ResetShufflers();

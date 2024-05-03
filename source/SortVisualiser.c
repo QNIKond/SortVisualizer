@@ -1,12 +1,11 @@
 #include "SortVisualiser.h"
-#include "math.h"
 
 #define SVBARSVOFFSET 100
 #define SVBARSHOFFSET 100
 
 void DrawBars(Rectangle bounds, SConfig *sconf, InputArray *input){
     double length = bounds.width-SVBARSHOFFSET*2;
-    double height = (bounds.height-SVBARSVOFFSET*2)/sconf->as.arraySize;
+    double height = (bounds.height-SVBARSVOFFSET*2)/input->maxElement;
     if(sconf->as.arraySize<length){
         double width =  length/sconf->as.arraySize;
         for(int i = 0; i < sconf->as.arraySize; ++i){
@@ -17,8 +16,8 @@ void DrawBars(Rectangle bounds, SConfig *sconf, InputArray *input){
     else{
         double iSkip =  sconf->as.arraySize/length;
         for(int i = 0; i < length; ++i){
-            DrawRectangle((int)(bounds.x+SVBARSHOFFSET+i), bounds.y+bounds.height-SVBARSVOFFSET-height*(input->arr[(int)(i*iSkip)] + 1),
-                          1, height*(input->arr[(int)(i*iSkip)] + 1), sconf->vs.col1);
+            DrawLine((int)(bounds.x+SVBARSHOFFSET+i), bounds.y+bounds.height-SVBARSVOFFSET-height*(input->arr[(int)(i*iSkip)] + 1),
+                     (int)(bounds.x+SVBARSHOFFSET+i), bounds.y+bounds.height-SVBARSVOFFSET, sconf->vs.col1);
         }
     }
 }
@@ -34,3 +33,4 @@ void DrawArray(Rectangle bounds, SConfig *sconf, InputArray *input){
             break;
     }
 }
+

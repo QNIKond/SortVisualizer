@@ -36,6 +36,8 @@ typedef struct{
         int arraySize;
         int arrayModifier;
         ShufflingAlgorithm shufflingAlgorithm;
+
+        bool updated;
     } as;
     struct {
         Visualisation visualisation;
@@ -53,8 +55,16 @@ typedef struct{
         bool showInfo;
     } vs;
     bool currentTab;
-    bool isInInitState;
     bool needsReloading;
+    /*bool isInInitState;
+    bool isOver;
+    bool isOnPause;*/
+    enum {
+        AnimStart = 0,
+        AnimShuffling,
+        AnimSorting,
+        AnimEnd
+    } animState;
 } SConfig;
 
 void InitializeSortConfig(SConfig *sconfig);

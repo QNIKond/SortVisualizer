@@ -9,25 +9,42 @@ void InitializeSortConfig(SConfig *sconfig){
     sconfig->vs.animationLength = 15;
     sconfig->vs.showShuffling = true;
     sconfig->vs.showProgressBars = true;
-    sconfig->isInInitState = true;
-}
-
-bool isEqual(char *a, char *b, int size){
-    for(int i = 0; i < size; ++i)
-        if(*(a+i) != *(b+i))
-            return false;
-    return true;
 }
 
 int SyncConfigs(SConfig *back, SConfig *front){
+    bool shouldReload = false;
     back->vs = front->vs;
-    if(!isEqual((char*)&back->as,(char*)&front->as,sizeof(front->as))) {
-        if (back->isInInitState) {
-            back->needsReloading = false;
-            back->as = front->as;
-            return 1;
-        } else
-            back->needsReloading = true;
+    back->currentTab = front->currentTab;
+    if(front->as.updated)
+        back->needsReloading = true;
+    if((back->needsReloading == true) && (front->animState == AnimStart)){
+        back->needsReloading = false;
+        front->as.updated = false;
+        back->as = front->as;
+        front->needsReloading = back->needsReloading;
+        shouldReload = true;
     }
-    return 0;
+    front->needsReloading = back->needsReloading;
+    if(((front->animState == AnimStart) ||
+            (front->animState == AnimShuffling)) && (back->animState != front->animState)){
+        back->animState = front->animState;
+        shouldReload = true;
+    }
+    return shouldReload;
 }
+//front back
+// st shuf  |
+// st sort  | - reset
+// st end   |
+
+// shuf st    - run
+// shuf sort
+// shuf end   - run
+
+// sort st
+// sort shuf
+// sort end
+
+// end shuf
+// end sort
+// end st
