@@ -34,8 +34,8 @@ add_executable(${PROJECT_NAME} source/main.c
         source/SettingsTab.h
         source/SortVisualiser.c
         source/SortVisualiser.h
-        source/ArrayGenerator.c
-        source/ArrayGenerator.h
+        source/InputArray.c
+        source/InputArray.h
         source/ArrayShuffler.c
         source/ArrayShuffler.h
         source/ArraySorter.c

@@ -1,5 +1,5 @@
 #pragma once
-#include "ArrayGenerator.h"
+#include "InputArray.h"
 
 int StepShuffleArray(SConfig *sconf, InputArray *input);
 

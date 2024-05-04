@@ -1,4 +1,4 @@
-#include "ArrayGenerator.h"
+#include "InputArray.h"
 #include "malloc.h"
 
 void GenerateLinear(SConfig *sconf,InputArray *input){

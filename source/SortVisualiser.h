@@ -1,6 +1,6 @@
 #pragma once
 #include "raylib.h"
 #include "SortConfig.h"
-#include "ArrayGenerator.h"
+#include "InputArray.h"
 
 void DrawArray(Rectangle bounds, SConfig *sconf, InputArray *input);

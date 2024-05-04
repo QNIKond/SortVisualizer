@@ -1,5 +1,5 @@
 #include "SortVisualiser.h"
-#include "ArrayGenerator.h"
+#include "InputArray.h"
 #define SVBARSVOFFSET 100
 #define SVBARSHOFFSET 100
 
