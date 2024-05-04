@@ -1,6 +1,6 @@
 #include "ArraySorter.h"
 
-int StepBubbleSort(SConfig *sconf, InputArray *input, SortData *data){
+int StepBubbleSort(InputArray *input, SortData *data){
     if(data->i + 1 >= input->filled) {
         if(data->isSorted)
             return 1;
@@ -21,7 +21,7 @@ int StepSortArray(SConfig *sconf, InputArray *input, SortData *data){
     switch (sconf->as.sortingAlgorithm) {
 
         case BubbleSort:
-            return StepBubbleSort(sconf,input, data);
+            return StepBubbleSort(input, data);
         case ShakerSort:
             return 0;
         case GravitySort:

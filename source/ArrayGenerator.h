@@ -5,7 +5,6 @@ typedef struct{
     int *arr;
     int filled;
     int size;
-    int maxElement;
 } InputArray;
 
 void InitInputArray(SConfig *sconf, InputArray *input);

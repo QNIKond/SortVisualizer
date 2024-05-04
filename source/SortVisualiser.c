@@ -5,7 +5,7 @@
 
 void DrawBars(Rectangle bounds, SConfig *sconf, InputArray *input){
     double length = bounds.width-SVBARSHOFFSET*2;
-    double height = (bounds.height-SVBARSVOFFSET*2)/input->maxElement;
+    double height = (bounds.height-SVBARSVOFFSET*2)/input->filled;
     if(input->filled<length){
         double width =  length/input->filled;
         for(int i = 0; i < input->filled; ++i){

@@ -4,7 +4,6 @@
 void GenerateLinear(SConfig *sconf,InputArray *input){
     for(int i = 0; i < input->filled; ++i)
         input->arr[i] = i;
-    input->maxElement = input->filled-1;
 }
 
 void GenerateArray(SConfig *sconf, InputArray *input){
@@ -22,7 +21,6 @@ void InitInputArray(SConfig *sconf, InputArray *input){
     input->arr = calloc(sconf->as.arraySize, sizeof(int));
     input->size = sconf->as.arraySize;
     input->filled = input->size;
-    input->maxElement = 0;
     GenerateArray(sconf,input);
 }
 

@@ -5,7 +5,7 @@
 #define BIGBUTTONHEIGHT (LINEHEIGHT*1.5)
 #define VPADDING 3
 #define VISLINESCOUNT 25//26
-#define TEXTBOXWIDTH 80
+#define TEXTBOXWIDTH 40
 #define PADDING 10
 #define ALARMCOLOR 0xDD1111FF
 
@@ -92,8 +92,10 @@ void DrawStartResetButtons(SConfig *sconf, Rectangle *bounds){
     }
     else{
         if (GuiButton((Rectangle) {bounds->x, GetScreenHeight() - PADDING - BIGBUTTONHEIGHT,
-                                   (bounds->width - PADDING) / 2, BIGBUTTONHEIGHT}, "RUN"))
+                                   (bounds->width - PADDING) / 2, BIGBUTTONHEIGHT}, "RUN")) {
             sconf->animState = AnimShuffling;
+
+        }
     }
 
     int defaultColor = GuiGetStyle(BUTTON,BASE_COLOR_NORMAL);
@@ -116,7 +118,7 @@ void UpdateDrawVisTab(SConfig *sconf, Rectangle bounds){
     UpdateDrawCheckBox(&bounds,"Show info",&sconf->vs.showInfo);
     UpdateDrawCheckBox(&bounds,"Show progress bars",&sconf->vs.showProgressBars);
     UpdateDrawCheckBox(&bounds,"Show shuffling",&sconf->vs.showShuffling);
-    UpdateDrawSlider(&bounds,"Animation length(s):",&sconf->vs.animationLength,5,30,&tbstates[0]);
+    UpdateDrawSlider(&bounds,"Animation length(s):",&sconf->vs.animationLength,2,45,&tbstates[0]);
     DrawSplitter(&bounds);
     UpdateDrawSubButton(&bounds,0,"", ColorToInt(sconf->vs.col2));
     UpdateDrawSubButton(&bounds,1,"",ColorToInt(sconf->vs.col1));
@@ -130,9 +132,7 @@ void UpdateDrawVisTab(SConfig *sconf, Rectangle bounds){
     DrawSplitter(&bounds);
 
     sconf->as.updated |= UpdateDrawDropdown(&bounds,"Shuffling algorithm","Random;Slight",&sconf->as.shufflingAlgorithm,0,&tbstates[3]);
-    sconf->as.updated |= UpdateDrawSlider(&bounds,"Array modifier:",&sconf->as.arrayModifier,0,100,&tbstates[4]);
     sconf->as.updated |= UpdateDrawSlider(&bounds,"Array size:",&sconf->as.arraySize,5,4000,&tbstates[5]);
-    sconf->as.updated |= UpdateDrawDropdown(&bounds, "Input array", "Linear;Square root", &sconf->as.inputArrayFunction, 0, &tbstates[6]);
     UpdateDrawSubButton(&bounds,0,"?", GuiGetStyle(BUTTON,BASE_COLOR_NORMAL));
     sconf->as.updated |= UpdateDrawDropdown(&bounds,"Sorting algorithm","Bubble sort; Shaker sort; Gravity sort",&sconf->as.sortingAlgorithm,1,&tbstates[7]);
 }

@@ -18,7 +18,8 @@ int SyncConfigs(SConfig *back, SConfig *front){
     back->currentTab = front->currentTab;
     if(front->as.updated)
         back->needsReloading = true;
-    if((back->needsReloading == true) && (front->animState == AnimStart)){
+    if((back->needsReloading == true) && ((front->animState == AnimStart) ||
+            ((front->animState == AnimShuffling) && (back->animState == AnimEnd)))){
         back->needsReloading = false;
         front->as.updated = false;
         back->as = front->as;
