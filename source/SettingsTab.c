@@ -4,7 +4,7 @@
 #define LINEHEIGHT 24
 #define BIGBUTTONHEIGHT (LINEHEIGHT*1.5)
 #define VPADDING 3
-#define VISLINESCOUNT 25//26
+#define VISLINESCOUNT 21//26
 #define TEXTBOXWIDTH 40
 #define PADDING 10
 #define ALARMCOLOR 0xDD1111FF
@@ -104,6 +104,7 @@ void DrawStartResetButtons(SConfig *sconf, Rectangle *bounds){
     if(GuiButton((Rectangle){PADDING/2 + bounds->width/2+bounds->x,GetScreenHeight()-PADDING-BIGBUTTONHEIGHT,
                           (bounds->width-PADDING)/2, BIGBUTTONHEIGHT},"RESET")) {
         sconf->animState = AnimStart;
+        sconf->as.updated = true;
         sconf->vs.isOnPause = false;
     }
     GuiSetStyle(BUTTON,BASE_COLOR_NORMAL, defaultColor);

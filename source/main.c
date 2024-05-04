@@ -85,9 +85,16 @@ void UpdateDrawFrame(void)
         ResetSorter(&sortData);
         ResizeInputArray(&arr,backEnd.as.arraySize);
         GenerateArray(&backEnd,&arr);
-
-        algFrames = EstimateShuffler(&backEnd);
-        animFrames = SHUFFLEDURATION*60;
+        if(!backEnd.vs.showShuffling){
+            while(!StepShuffleArray(&backEnd, &arr));
+            /*backEnd.animState = AnimSorting;
+            frontEnd.animState = AnimSorting;
+            algFrames = EstimateSorter(&backEnd,&arr,&sorted);
+            animFrames = backEnd.vs.animationLength*60;*/
+        }else {
+            algFrames = EstimateShuffler(&backEnd);
+            animFrames = SHUFFLEDURATION * 60;
+        }
         algCount = 0;
         animCount = 0;
     }
