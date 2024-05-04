@@ -15,6 +15,7 @@ void UpdateDrawFrame(void);
 SConfig frontEnd;
 SConfig backEnd;
 InputArray arr = {0};
+InputArray sorted = {0};
 Image icon;
 
 void LoadIcon(){
@@ -40,40 +41,93 @@ int main()
     InitializeSortConfig(&frontEnd);
     InitializeSortConfig(&backEnd);
     InitInputArray(&frontEnd, &arr);
+    InitInputArray(&frontEnd, &sorted);
     while (!WindowShouldClose())
     {
         UpdateDrawFrame();
     }
     UnloadImage(icon);
     FreeInputArray(&arr);
+    FreeInputArray(&sorted);
     return 0;
 }
 
+bool showFPS = false;
+SortData sortData;
+/*
+int sortTime = 0;
+double leftOver = 0;
+int sortFramesLeft = 0;
+
+int GetCurFramesCount(){
+    int left = backEnd.vs.animationLength*60 - sortTime;
+    double perFrame = (double)EstimateSorter(&backEnd,&arr,&sorted) / left;
+    int toDoe = (int)perFrame;
+    leftOver += perFrame - toDoe;
+    toDoe += (int)leftOver;
+    leftOver -= (int)leftOver;
+    return toDoe;
+}
+*/
+int algFrames;
+int animFrames;
+int algCount;
+int animCount;
+#define SHUFFLEDURATION 1.5
 void UpdateDrawFrame(void)
 {
+
     BeginDrawing();
     ClearBackground((Color) {0x2c,0x2c,0x2c,0xff});
     UpdateDrawSettingTab(&frontEnd, (Rectangle){0, 0, 200, GetScreenHeight()});
     if(SyncConfigs(&backEnd,&frontEnd)) {
         ResetShufflers();
-        ResetSorters();
-        UpdateInputArray(&backEnd, &arr);
+        ResetSorter(&sortData);
+        ResizeInputArray(&arr,backEnd.as.arraySize);
+        GenerateArray(&backEnd,&arr);
+
+        algFrames = EstimateShuffler(&backEnd);
+        animFrames = SHUFFLEDURATION*60;
+        algCount = 0;
+        animCount = 0;
     }
+
     if(!backEnd.vs.isOnPause) {
         if (backEnd.animState == AnimShuffling) {
-            if (StepShuffleArray(&backEnd, &arr)) {
-                backEnd.animState = AnimSorting;
-                frontEnd.animState = AnimSorting;
+            if(animFrames-animCount-1)
+                ++animCount;
+            while((backEnd.animState == AnimShuffling) &&
+            ((((double)(algFrames-algCount)/(animFrames-animCount)) >= ((double)algCount/animCount))||
+                    (animFrames-animCount-1 <= 0))) {
+                ++algCount;
+                if (StepShuffleArray(&backEnd, &arr)) {
+                    backEnd.animState = AnimSorting;
+                    frontEnd.animState = AnimSorting;
+                    algFrames = EstimateSorter(&backEnd,&arr,&sorted);
+                    animFrames = backEnd.vs.animationLength*60;
+                    algCount = 0;
+                    animCount = 1;
+                }
             }
+
         } else if (backEnd.animState == AnimSorting) {
-            if (StepSortArray(&backEnd, &arr)) {
-                backEnd.animState = AnimEnd;
-                frontEnd.animState = AnimEnd;
+            if(backEnd.vs.animationLength*60-animCount-1)
+                ++animCount;
+            while((backEnd.animState == AnimSorting) &&
+                  ((((double)(algFrames-algCount)/(backEnd.vs.animationLength*60-animCount)) >= ((double)algCount/animCount))||
+                  (backEnd.vs.animationLength*60-animCount-1 <= 0))) {
+                ++algCount;
+                if (StepSortArray(&backEnd, &arr, &sortData)) {
+                    backEnd.animState = AnimEnd;
+                    frontEnd.animState = AnimEnd;
+                }
             }
         }
     }
     DrawArray((Rectangle){200,0,GetScreenWidth()-200,GetScreenHeight()}, &backEnd, &arr);
-    if(IsKeyPressed(KEY_F))
+    if(IsKeyDown(KEY_F))
+        showFPS = !showFPS;
+    if(showFPS)
         DrawFPS(0,0);
     EndDrawing();
 }

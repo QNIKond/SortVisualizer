@@ -2,9 +2,9 @@
 #include "malloc.h"
 
 void GenerateLinear(SConfig *sconf,InputArray *input){
-    for(int i = 0; i < sconf->as.arraySize; ++i)
+    for(int i = 0; i < input->filled; ++i)
         input->arr[i] = i;
-    input->maxElement = sconf->as.arraySize;
+    input->maxElement = input->filled-1;
 }
 
 void GenerateArray(SConfig *sconf, InputArray *input){
@@ -21,15 +21,17 @@ void GenerateArray(SConfig *sconf, InputArray *input){
 void InitInputArray(SConfig *sconf, InputArray *input){
     input->arr = calloc(sconf->as.arraySize, sizeof(int));
     input->size = sconf->as.arraySize;
+    input->filled = input->size;
+    input->maxElement = 0;
     GenerateArray(sconf,input);
 }
 
-void UpdateInputArray(SConfig *sconf, InputArray *input){
-    if(input->size<sconf->as.arraySize) {
-        input->arr = realloc(input->arr, sconf->as.arraySize*sizeof(int));
-        input->size = sconf->as.arraySize;
+void ResizeInputArray(InputArray *input, int newSize){
+    if(input->size<newSize) {
+        input->arr = realloc(input->arr, newSize*sizeof(int));
+        input->size = newSize;
     }
-    GenerateArray(sconf,input);
+    input->filled = newSize;
 }
 
 void FreeInputArray(InputArray *arr){

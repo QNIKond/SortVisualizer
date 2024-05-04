@@ -1,5 +1,6 @@
 #pragma once
 #include "raylib.h"
+
 typedef enum {
     BubbleSort,
     ShakerSort,
@@ -60,7 +61,6 @@ typedef struct{
     bool needsReloading;
     /*bool isInInitState;
     bool isOver;*/
-
     enum {
         AnimStart = 0,
         AnimShuffling,

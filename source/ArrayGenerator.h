@@ -3,12 +3,15 @@
 
 typedef struct{
     int *arr;
+    int filled;
     int size;
     int maxElement;
 } InputArray;
 
 void InitInputArray(SConfig *sconf, InputArray *input);
 
-void UpdateInputArray(SConfig *sconf, InputArray *input);
+void GenerateArray(SConfig *sconf, InputArray *input);
+
+void ResizeInputArray(InputArray *input, int newSize);
 
 void FreeInputArray(InputArray *arr);

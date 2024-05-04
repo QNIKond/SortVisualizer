@@ -116,7 +116,7 @@ void UpdateDrawVisTab(SConfig *sconf, Rectangle bounds){
     UpdateDrawCheckBox(&bounds,"Show info",&sconf->vs.showInfo);
     UpdateDrawCheckBox(&bounds,"Show progress bars",&sconf->vs.showProgressBars);
     UpdateDrawCheckBox(&bounds,"Show shuffling",&sconf->vs.showShuffling);
-    UpdateDrawSlider(&bounds,"Animation length(s):",&sconf->vs.animationLength,0,ANIMLENMAX,&tbstates[0]);
+    UpdateDrawSlider(&bounds,"Animation length(s):",&sconf->vs.animationLength,5,30,&tbstates[0]);
     DrawSplitter(&bounds);
     UpdateDrawSubButton(&bounds,0,"", ColorToInt(sconf->vs.col2));
     UpdateDrawSubButton(&bounds,1,"",ColorToInt(sconf->vs.col1));

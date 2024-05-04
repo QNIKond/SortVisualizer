@@ -1,6 +1,13 @@
 #pragma once
 #include "ArrayGenerator.h"
 
-int StepSortArray(SConfig *sconf, InputArray *input);
+typedef struct{
+    int i;
+    bool isSorted;
+} SortData;
 
-void ResetSorters();
+int StepSortArray(SConfig *sconf, InputArray *input, SortData *data);
+
+void ResetSorter(SortData *data);
+
+int EstimateSorter(SConfig *sconf, InputArray *input, InputArray *sorted);

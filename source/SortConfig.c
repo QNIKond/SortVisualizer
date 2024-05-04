@@ -9,6 +9,7 @@ void InitializeSortConfig(SConfig *sconfig){
     sconfig->vs.animationLength = 15;
     sconfig->vs.showShuffling = true;
     sconfig->vs.showProgressBars = true;
+    sconfig->needsReloading = true;
 }
 
 int SyncConfigs(SConfig *back, SConfig *front){

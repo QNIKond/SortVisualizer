@@ -1,32 +1,27 @@
 #include "ArraySorter.h"
 
-struct SOShared{
-    int i;
-    bool isSorted;
-} soShared;
-
-int StepBubbleSort(SConfig *sconf, InputArray *input){
-    if(input->arr[soShared.i] > input->arr[soShared.i + 1]) {
-        int t = input->arr[soShared.i];
-        input->arr[soShared.i] = input->arr[soShared.i + 1];
-        input->arr[soShared.i + 1] = t;
-        soShared.isSorted = false;
-    }
-    ++soShared.i;
-    if(soShared.i+1 >= sconf->as.arraySize) {
-        if(soShared.isSorted)
+int StepBubbleSort(SConfig *sconf, InputArray *input, SortData *data){
+    if(data->i + 1 >= input->filled) {
+        if(data->isSorted)
             return 1;
-        soShared.isSorted = true;
-        soShared.i = 0;
+        data->isSorted = true;
+        data->i = 0;
     }
+    if(input->arr[data->i] > input->arr[data->i + 1]) {
+        int t = input->arr[data->i];
+        input->arr[data->i] = input->arr[data->i + 1];
+        input->arr[data->i + 1] = t;
+        data->isSorted = false;
+    }
+    ++data->i;
     return 0;
 }
 
-int StepSortArray(SConfig *sconf, InputArray *input){
+int StepSortArray(SConfig *sconf, InputArray *input, SortData *data){
     switch (sconf->as.sortingAlgorithm) {
 
         case BubbleSort:
-            return StepBubbleSort(sconf,input);
+            return StepBubbleSort(sconf,input, data);
         case ShakerSort:
             return 0;
         case GravitySort:
@@ -34,6 +29,20 @@ int StepSortArray(SConfig *sconf, InputArray *input){
     }
 }
 
-void ResetSorters(){
-    soShared = (struct SOShared){0};
+void ResetSorter(SortData *data){
+    *data = (SortData){0};
+    data->isSorted = true;
+}
+
+int EstimateSorter(SConfig *sconf, InputArray *input, InputArray *sorted){
+    SortData data;
+    ResetSorter(&data);
+    ResizeInputArray(sorted, input->filled);
+    for(int i = 0; i < input->filled; ++i){
+        sorted->arr[i] = input->arr[i];
+    }
+    int counter = 0;
+    while(!StepSortArray(sconf,sorted, &data))
+        ++counter;
+    return ++counter;
 }
