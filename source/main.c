@@ -18,7 +18,7 @@ InputArray arr = {0};
 InputArray sorted = {0};
 Image icon;
 
-void LoadIcon(){
+void LoadDrawIcon(){
     icon = GenImageColor(128,128,(Color){0});
     ImageDrawCircle(&icon,64,64,64,BLACK);
     ImageDrawCircle(&icon,64,64,62,(Color) {0x2c,0x2c,0x2c,0xff});
@@ -35,7 +35,7 @@ int main()
     InitWindow(screenWidth, screenHeight, "Sort visualiser");
     SetTargetFPS(60);
     SetExitKey(KEY_NULL);
-    LoadIcon();
+    LoadDrawIcon();
     GuiLoadStyleDark();
 
     InitializeSortConfig(&frontEnd);
@@ -54,31 +54,16 @@ int main()
 
 bool showFPS = false;
 SortData sortData;
-/*
-int sortTime = 0;
-double leftOver = 0;
-int sortFramesLeft = 0;
 
-int GetCurFramesCount(){
-    int left = backEnd.vs.animationLength*60 - sortTime;
-    double perFrame = (double)EstimateSorter(&backEnd,&arr,&sorted) / left;
-    int toDoe = (int)perFrame;
-    leftOver += perFrame - toDoe;
-    toDoe += (int)leftOver;
-    leftOver -= (int)leftOver;
-    return toDoe;
-}
-*/
-int algFrames;
-int animFrames;
-int algCount;
-int animCount;
 #define SHUFFLEDURATION 1.5
 void UpdateDrawFrame(void)
 {
-
+    int t = 0x28;
     BeginDrawing();
-    ClearBackground((Color) {0x2c,0x2c,0x2c,0xff});
+    if(ANIMRUNNING(backEnd.animState))
+        ClearBackground((Color) {0x2c,0x2c,0x2c,0xff});
+    else
+        ClearBackground((Color) {t,t,t,0xff});
     UpdateDrawSettingTab(&frontEnd, (Rectangle){0, 0, 200, GetScreenHeight()});
     if(SyncConfigs(&backEnd,&frontEnd)) {
         ResetShufflers();
@@ -92,38 +77,40 @@ void UpdateDrawFrame(void)
             algFrames = EstimateSorter(&backEnd,&arr,&sorted);
             animFrames = backEnd.vs.animationLength*60;*/
         }else {
-            algFrames = EstimateShuffler(&backEnd);
-            animFrames = SHUFFLEDURATION * 60;
+            backEnd.algFrames = EstimateShuffler(&backEnd);
+            backEnd.animFrames = SHUFFLEDURATION * 60;
         }
-        algCount = 0;
-        animCount = 0;
+        backEnd.algCount = 0;
+        backEnd.animCount = 0;
     }
 
     if(!backEnd.vs.isOnPause) {
         if (backEnd.animState == AnimShuffling) {
-            if(animFrames-animCount-1)
-                ++animCount;
+            if(backEnd.animFrames-backEnd.animCount-1)
+                ++backEnd.animCount;
             while((backEnd.animState == AnimShuffling) &&
-            ((((double)(algFrames-algCount)/(animFrames-animCount)) >= ((double)algCount/animCount))||
-                    (animFrames-animCount-1 <= 0))) {
-                ++algCount;
+            ((((double)(backEnd.algFrames-backEnd.algCount)/(backEnd.animFrames-backEnd.animCount)) >=
+            ((double)backEnd.algCount/backEnd.animCount))||
+                    (backEnd.animFrames-backEnd.animCount-1 <= 0))) {
+                ++backEnd.algCount;
                 if (StepShuffleArray(&backEnd, &arr)) {
                     backEnd.animState = AnimSorting;
                     frontEnd.animState = AnimSorting;
-                    algFrames = EstimateSorter(&backEnd,&arr,&sorted);
-                    animFrames = backEnd.vs.animationLength*60;
-                    algCount = 0;
-                    animCount = 1;
+                    backEnd.algFrames = EstimateSorter(&backEnd,&arr,&sorted);
+                    backEnd.animFrames = backEnd.vs.animationLength*60;
+                    backEnd.algCount = 0;
+                    backEnd.animCount = 1;
                 }
             }
 
         } else if (backEnd.animState == AnimSorting) {
-            if(backEnd.vs.animationLength*60-animCount-1)
-                ++animCount;
+            if(backEnd.vs.animationLength*60-backEnd.animCount-1)
+                ++backEnd.animCount;
             while((backEnd.animState == AnimSorting) &&
-                  ((((double)(algFrames-algCount)/(backEnd.vs.animationLength*60-animCount)) >= ((double)algCount/animCount))||
-                  (backEnd.vs.animationLength*60-animCount-1 <= 0))) {
-                ++algCount;
+                  ((((double)(backEnd.algFrames-backEnd.algCount)/(backEnd.vs.animationLength*60-backEnd.animCount)) >=
+                  ((double)backEnd.algCount/backEnd.animCount))||
+                  (backEnd.vs.animationLength*60-backEnd.animCount-1 <= 0))) {
+                ++backEnd.algCount;
                 if (StepSortArray(&backEnd, &arr, &sortData)) {
                     backEnd.animState = AnimEnd;
                     frontEnd.animState = AnimEnd;

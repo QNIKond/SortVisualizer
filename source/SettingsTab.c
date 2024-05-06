@@ -4,7 +4,7 @@
 #define LINEHEIGHT 24
 #define BIGBUTTONHEIGHT (LINEHEIGHT*1.5)
 #define VPADDING 3
-#define VISLINESCOUNT 21//26
+#define VISLINESCOUNT 7//21
 #define TEXTBOXWIDTH 40
 #define PADDING 10
 #define ALARMCOLOR 0xDD1111FF
@@ -116,23 +116,23 @@ void UpdateDrawVisTab(SConfig *sconf, Rectangle bounds){
     bounds.y += LINEHEIGHT*VISLINESCOUNT;
     DrawStartResetButtons(sconf,&bounds);
     GuiSetStyle(DEFAULT,TEXT_ALIGNMENT,TEXT_ALIGN_LEFT);
-    UpdateDrawCheckBox(&bounds,"Show info",&sconf->vs.showInfo);
-    UpdateDrawCheckBox(&bounds,"Show progress bars",&sconf->vs.showProgressBars);
+    //UpdateDrawCheckBox(&bounds,"Show info",&sconf->vs.showInfo);
+    //UpdateDrawCheckBox(&bounds,"Show progress bars",&sconf->vs.showProgressBars);
     UpdateDrawCheckBox(&bounds,"Show shuffling",&sconf->vs.showShuffling);
     UpdateDrawSlider(&bounds,"Animation length(s):",&sconf->vs.animationLength,2,45,&tbstates[0]);
     DrawSplitter(&bounds);
-    UpdateDrawSubButton(&bounds,0,"", ColorToInt(sconf->vs.col2));
-    UpdateDrawSubButton(&bounds,1,"",ColorToInt(sconf->vs.col1));
-    UpdateDrawDropdown(&bounds,"Coloring","Plain;Gradient;Rainbow",&sconf->vs.coloring,2,&tbstates[1]);
-    UpdateDrawCheckBox(&bounds,"Mirrored",&sconf->vs.mirrored);
-    UpdateDrawCheckBox(&bounds,"Connected dots",&sconf->vs.connectedDots);
-    UpdateDrawCheckBox(&bounds,"Hollow",&sconf->vs.hollow);
-    UpdateDrawCheckBox(&bounds,"Show value as length",&sconf->vs.showValueAsLength);
-    UpdateDrawCheckBox(&bounds,"Disparity",&sconf->vs.disparity);
-    UpdateDrawDropdown(&bounds,"Visualisation","Bars;Pyramid;Circle",&sconf->vs.visualisation,0,&tbstates[2]);
-    DrawSplitter(&bounds);
+    //UpdateDrawSubButton(&bounds,0,"", ColorToInt(sconf->vs.col2));
+    //UpdateDrawSubButton(&bounds,1,"",ColorToInt(sconf->vs.col1));
+    //UpdateDrawDropdown(&bounds,"Coloring","Plain;Gradient;Rainbow",&sconf->vs.coloring,2,&tbstates[1]);
+    //UpdateDrawCheckBox(&bounds,"Mirrored",&sconf->vs.mirrored);
+    //UpdateDrawCheckBox(&bounds,"Connected dots",&sconf->vs.connectedDots);
+    //UpdateDrawCheckBox(&bounds,"Hollow",&sconf->vs.hollow);
+    //UpdateDrawCheckBox(&bounds,"Show value as length",&sconf->vs.showValueAsLength);
+    //UpdateDrawCheckBox(&bounds,"Disparity",&sconf->vs.disparity);
+    //UpdateDrawDropdown(&bounds,"Visualisation","Bars;Pyramid;Circle",&sconf->vs.visualisation,0,&tbstates[2]);
+    //DrawSplitter(&bounds);
 
-    sconf->as.updated |= UpdateDrawDropdown(&bounds,"Shuffling algorithm","Random;Slight",&sconf->as.shufflingAlgorithm,0,&tbstates[3]);
+    //sconf->as.updated |= UpdateDrawDropdown(&bounds,"Shuffling algorithm","Random;Slight",&sconf->as.shufflingAlgorithm,0,&tbstates[3]);
     sconf->as.updated |= UpdateDrawSlider(&bounds,"Array size:",&sconf->as.arraySize,5,4000,&tbstates[5]);
     UpdateDrawSubButton(&bounds,0,"?", GuiGetStyle(BUTTON,BASE_COLOR_NORMAL));
     sconf->as.updated |= UpdateDrawDropdown(&bounds,"Sorting algorithm","Bubble sort; Shaker sort; Gravity sort",&sconf->as.sortingAlgorithm,1,&tbstates[7]);

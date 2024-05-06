@@ -59,8 +59,12 @@ typedef struct{
     } vs;
     bool currentTab;
     bool needsReloading;
-    /*bool isInInitState;
-    bool isOver;*/
+
+    int algFrames;
+    int animFrames;
+    int algCount;
+    int animCount;
+
     enum {
         AnimStart = 0,
         AnimShuffling,

@@ -22,6 +22,16 @@ void DrawBars(Rectangle bounds, SConfig *sconf, InputArray *input){
     }
 }
 
+#define EMPTYPBCOLOR BLACK
+#define FILLEDPBCOLOR BLUE
+#define PBHEIGHT 16
+
+void DrawProgressBar(Rectangle bounds, SConfig *sconf){
+    DrawRectangle(bounds.x,bounds.y+bounds.height-PBHEIGHT,bounds.width,PBHEIGHT,EMPTYPBCOLOR);
+    float progress = (float)sconf->animCount / (float)sconf->animFrames;
+    DrawRectangle(bounds.x,bounds.y+bounds.height-PBHEIGHT, (int)(bounds.width * progress), PBHEIGHT, FILLEDPBCOLOR);
+}
+
 void DrawArray(Rectangle bounds, SConfig *sconf, InputArray *input){
     switch(sconf->vs.visualisation){
         case Bars:
@@ -32,4 +42,5 @@ void DrawArray(Rectangle bounds, SConfig *sconf, InputArray *input){
         case Circle:
             break;
     }
+    DrawProgressBar(bounds,sconf);
 }

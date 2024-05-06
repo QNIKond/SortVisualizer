@@ -6,10 +6,10 @@ struct SUShared{
 } suShared;
 
 int StepShuffleRandom(SConfig *sconf, InputArray *input){
-    if(suShared.i >= input->filled)
+    if(suShared.i >= input->filled-1)
         return 1;
     int t = input->arr[suShared.i];
-    int r = rand()%input->filled;
+    int r = rand()%(input->filled-suShared.i-1)+suShared.i+1;
     input->arr[suShared.i] = input->arr[r];
     input->arr[r] = t;
     ++suShared.i;
