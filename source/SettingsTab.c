@@ -1,5 +1,7 @@
 #include "SettingsTab.h"
 #include "../raygui.h"
+#include "stdio.h"
+#include "stdlib.h"
 
 #define LINEHEIGHT 24
 #define BIGBUTTONHEIGHT (LINEHEIGHT*1.5)
@@ -8,6 +10,11 @@
 #define TEXTBOXWIDTH 40
 #define PADDING 10
 #define ALARMCOLOR 0xDD1111FF
+
+#define SNOTACTIVE 0
+int activeDropDown = 0;
+int activeTextBox = 0;
+char textBoxData[8][20] = {0};
 
 void UpdateDrawTabHeads(SConfig *sconf, Rectangle bounds){
     if(sconf->currentTab){
@@ -31,35 +38,50 @@ void UpdateDrawCheckBox(Rectangle *bounds, const char *text, bool *data){
     bounds->y -= LINEHEIGHT;
 }
 
-int UpdateDrawSlider(Rectangle *bounds, const char *text, int *data, const int min, const int max, bool *state){
+int UpdateDrawSlider(Rectangle *bounds, const char *text, int *data, const int min, const int max, int id){
     float value = (float)*data;
     Rectangle sliderRect = {bounds->x,bounds->y+VPADDING,bounds->width-PADDING-TEXTBOXWIDTH,LINEHEIGHT-VPADDING*2};
     DrawLine(sliderRect.x,sliderRect.y+sliderRect.height/2,
              sliderRect.x+sliderRect.width,sliderRect.y+sliderRect.height/2,BLACK);
-    int changed = GuiSlider(sliderRect,"","",&value,(float)min,(float)max);
-
+    int changed = GuiSlider(sliderRect, "", "", &value, (float)min, (float)max);
     *data = (int)value;
-    if(GuiValueBox((Rectangle){bounds->x + bounds->width-TEXTBOXWIDTH,bounds->y+VPADDING
-                               ,TEXTBOXWIDTH,LINEHEIGHT-VPADDING*2},"",data,min,max,*state)) {
-        *state = !*state;
-        changed = true;
+    if(GuiTextBox((Rectangle){bounds->x + bounds->width-TEXTBOXWIDTH,bounds->y+VPADDING
+            ,TEXTBOXWIDTH,LINEHEIGHT-VPADDING*2},textBoxData[id],20,id == activeTextBox))
+    {
+        if(activeTextBox == id) {
+            activeTextBox = SNOTACTIVE;
+            char *err;
+            int out = strtol(textBoxData[id],&err,10);
+            if(err-textBoxData[id]) {
+                if ((out >= min) && (out <= max)) {
+                    *data = out;
+                    changed = true;
+                }
+            }
+        }
+        else
+            activeTextBox = id;
     }
+    if(activeTextBox != id)
+        sprintf_s(textBoxData[id],19,"%d",*data);
     bounds->y -= LINEHEIGHT;
     GuiLabel(*bounds,text);
     bounds->y -= LINEHEIGHT;
     return changed;
 }
-int UpdateDrawDropdown(Rectangle *bounds, const char *text, const char* options, int *data, int subButtons, bool *state){
+
+int UpdateDrawDropdown(Rectangle *bounds, const char *text, const char* options, int *data, int subButtons, int id){
     int prevData = *data;
+    bool state = id == activeDropDown;
     if(GuiDropdownBox((Rectangle){bounds->x,bounds->y,bounds->width - (LINEHEIGHT+PADDING)*subButtons,LINEHEIGHT}, options,
-                   data, *state)) {
-        if(*state){
+                   data, state)) {
+        if(state){
             GuiUnlock();
-            *state = false;
+            activeDropDown = SNOTACTIVE;
         }
         else{
             GuiLock();
-            *state = true;
+            activeDropDown = id;
         }
     }
     bounds->y -= LINEHEIGHT;
@@ -111,7 +133,7 @@ void DrawStartResetButtons(SConfig *sconf, Rectangle *bounds){
 }
 
 void UpdateDrawVisTab(SConfig *sconf, Rectangle bounds){
-    static  bool tbstates[8] = {0};
+    int id = SNOTACTIVE+1;
     bounds.height = LINEHEIGHT;
     bounds.y += LINEHEIGHT*VISLINESCOUNT;
     DrawStartResetButtons(sconf,&bounds);
@@ -119,7 +141,7 @@ void UpdateDrawVisTab(SConfig *sconf, Rectangle bounds){
     //UpdateDrawCheckBox(&bounds,"Show info",&sconf->vs.showInfo);
     //UpdateDrawCheckBox(&bounds,"Show progress bars",&sconf->vs.showProgressBars);
     UpdateDrawCheckBox(&bounds,"Show shuffling",&sconf->vs.showShuffling);
-    UpdateDrawSlider(&bounds,"Animation length(s):",&sconf->vs.animationLength,2,45,&tbstates[0]);
+    UpdateDrawSlider(&bounds,"Animation length(s):",&sconf->vs.animationLength,2,45,id++);
     DrawSplitter(&bounds);
     //UpdateDrawSubButton(&bounds,0,"", ColorToInt(sconf->vs.col2));
     //UpdateDrawSubButton(&bounds,1,"",ColorToInt(sconf->vs.col1));
@@ -133,9 +155,9 @@ void UpdateDrawVisTab(SConfig *sconf, Rectangle bounds){
     //DrawSplitter(&bounds);
 
     //sconf->as.updated |= UpdateDrawDropdown(&bounds,"Shuffling algorithm","Random;Slight",&sconf->as.shufflingAlgorithm,0,&tbstates[3]);
-    sconf->as.updated |= UpdateDrawSlider(&bounds,"Array size:",&sconf->as.arraySize,5,4000,&tbstates[5]);
+    sconf->as.updated |= UpdateDrawSlider(&bounds,"Array size:",&sconf->as.arraySize,5,4000,id++);
     UpdateDrawSubButton(&bounds,0,"?", GuiGetStyle(BUTTON,BASE_COLOR_NORMAL));
-    sconf->as.updated |= UpdateDrawDropdown(&bounds,"Sorting algorithm","Bubble sort; Shaker sort; Gravity sort",&sconf->as.sortingAlgorithm,1,&tbstates[7]);
+    sconf->as.updated |= UpdateDrawDropdown(&bounds,"Sorting algorithm","Bubble sort; Shaker sort; Gravity sort",&sconf->as.sortingAlgorithm,1,id++);
 }
 
 void UpdateDrawProphTab(SConfig *sconf, Rectangle bounds){
