@@ -79,6 +79,8 @@ void ResetSortVisualizer(){
     GenerateArray(&arr);
     ResetShuffler();
     ResetSorter(&sortData, arr.filled);
+    if(!sconf.visual.showShuffling)
+        while(!StepShuffleArray(&sconf, &arr));
 }
 
 void InitSortVisualizer(){
@@ -154,6 +156,7 @@ void PlayAnimShuffling(){
     if(!sconf.visual.showShuffling){
         while(!StepShuffleArray(&sconf, &arr));
         SwitchAnimState(AnimSorting);
+        return;
     } else{
         for(int i = GetCyclesCount(SHUFFLEDURATION); i > 0; --i) {
             ++algCount;
