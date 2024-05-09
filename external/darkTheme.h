@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                                                                              //
-// StyleAsCode exporter v2.0 - Style data exported as a values array            //
+// StyleAsCode exporter v2.0 - Style data exported array a values array            //
 //                                                                              //
 // USAGE: On init call: GuiLoadStyleDark();                                   //
 //                                                                              //

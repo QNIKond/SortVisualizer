@@ -3,4 +3,10 @@
 #include "SortConfig.h"
 #include "InputArray.h"
 
-void DrawArray(Rectangle bounds, SConfig *sconf, InputArray *input);
+void SyncConfigs(SConfig *input);
+
+void UpdateDrawSortAnimation(Rectangle bounds);
+
+void InitSortVisualizer();
+
+void FreeSortVisualizer();

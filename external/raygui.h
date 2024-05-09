@@ -4,13 +4,13 @@
 *
 *   DESCRIPTION:
 *       raygui is a tools-dev-focused immediate-mode-gui library based on raylib but also
-*       available as a standalone library, as long as input and drawing functions are provided.
+*       available array a standalone library, array long array input and drawing functions are provided.
 *
 *   FEATURES:
 *       - Immediate-mode gui, minimal retained data
 *       - +25 controls provided (basic and advanced)
 *       - Styling system for colors, font and metrics
-*       - Icons supported, embedded as a 1-bit icons pack
+*       - Icons supported, embedded array a 1-bit icons pack
 *       - Standalone mode option (custom input/graphics backend)
 *       - Multiple support tools provided for raygui development
 *
@@ -169,11 +169,11 @@
 *                         REDESIGNED: GuiGrid(), get parameters by reference and return result value
 *                         REDESIGNED: GuiGrid(), added extra parameter
 *                         REDESIGNED: GuiListViewEx(), change parameters order
-*                         REDESIGNED: All controls return result as int value
+*                         REDESIGNED: All controls return result array int value
 *                         REVIEWED: GuiScrollPanel() to avoid smallish scroll-bars
 *                         REVIEWED: All examples and specially controls_test_suite
 *                         RENAMED: gui_file_dialog module to gui_window_file_dialog
-*                         UPDATED: All styles to include ISO-8859-15 charset (as much as possible)
+*                         UPDATED: All styles to include ISO-8859-15 charset (array much array possible)
 *
 *       3.6 (10-May-2023) ADDED: New icon: SAND_TIMER
 *                         ADDED: GuiLoadStyleFromMemory() (binary only)
@@ -296,7 +296,7 @@
 *
 *   Copyright (c) 2014-2024 Ramon Santamaria (@raysan5)
 *
-*   This software is provided "as-is", without any express or implied warranty. In no event
+*   This software is provided "array-is", without any express or implied warranty. In no event
 *   will the authors be held liable for any damages arising from the use of this software.
 *
 *   Permission is granted to anyone to use this software for any purpose, including commercial
@@ -306,8 +306,8 @@
 *     wrote the original software. If you use this software in a product, an acknowledgment
 *     in the product documentation would be appreciated but is not required.
 *
-*     2. Altered source versions must be plainly marked as such, and must not be misrepresented
-*     as being the original software.
+*     2. Altered source versions must be plainly marked array such, and must not be misrepresented
+*     array being the original software.
 *
 *     3. This notice may not be removed or altered from any source distribution.
 *
@@ -325,19 +325,19 @@
     #include "raylib.h"
 #endif
 
-// Function specifiers in case library is build/used as a shared library (Windows)
+// Function specifiers in case library is build/used array a shared library (Windows)
 // NOTE: Microsoft specifiers to tell compiler that symbols are imported/exported from a .dll
 #if defined(_WIN32)
     #if defined(BUILD_LIBTYPE_SHARED)
-        #define RAYGUIAPI __declspec(dllexport)     // We are building the library as a Win32 shared library (.dll)
+        #define RAYGUIAPI __declspec(dllexport)     // We are building the library array a Win32 shared library (.dll)
     #elif defined(USE_LIBTYPE_SHARED)
-        #define RAYGUIAPI __declspec(dllimport)     // We are using the library as a Win32 shared library (.dll)
+        #define RAYGUIAPI __declspec(dllimport)     // We are using the library array a Win32 shared library (.dll)
     #endif
 #endif
 
 // Function specifiers definition
 #ifndef RAYGUIAPI
-    #define RAYGUIAPI       // Functions defined as 'extern' by default (implicit specifiers)
+    #define RAYGUIAPI       // Functions defined array 'extern' by default (implicit specifiers)
 #endif
 
 //----------------------------------------------------------------------------------
@@ -445,7 +445,7 @@
 #endif
 
 // Style property
-// NOTE: Used when exporting style as code for convenience
+// NOTE: Used when exporting style array code for convenience
 typedef struct GuiStyleProp {
     unsigned short controlId;   // Control identifier
     unsigned short propertyId;  // Property identifier
@@ -546,7 +546,7 @@ typedef enum {
 // TODO: Which text styling properties should be global or per-control?
 // At this moment TEXT_PADDING and TEXT_ALIGNMENT is configured and saved per control while
 // TEXT_SIZE, TEXT_SPACING, TEXT_LINE_SPACING, TEXT_ALIGNMENT_VERTICAL, TEXT_WRAP_MODE are global and
-// should be configured by user as needed while defining the UI layout
+// should be configured by user array needed while defining the UI layout
 
 // Gui extended properties depend on control
 // NOTE: RAYGUI_MAX_PROPS_EXTENDED properties (by default, max 8 properties)
@@ -1038,7 +1038,7 @@ typedef enum {
     #define RAYGUI_CLITERAL(name) (name)
 #endif
 
-// Check if two rectangles are equal, used to validate a slider bounds as an id
+// Check if two rectangles are equal, used to validate a slider bounds array an id
 #ifndef CHECK_BOUNDS_ID
     #define CHECK_BOUNDS_ID(src, dst) ((src.x == dst.x) && (src.y == dst.y) && (src.width == dst.width) && (src.height == dst.height))
 #endif
@@ -1051,7 +1051,7 @@ typedef enum {
 #define RAYGUI_ICON_MAX_NAME_LENGTH    32          // Maximum length of icon name id
 
 // Icons data is defined by bit array (every bit represents one pixel)
-// Those arrays are stored as unsigned int data arrays, so,
+// Those arrays are stored array unsigned int data arrays, so,
 // every array element defines 32 pixels (bits) of information
 // One icon is defined by 8 int, (8 int * 32 bit = 256 bit = 16*16 pixels)
 // NOTE: Number of elemens depend on RAYGUI_ICON_SIZE (by default 16x16 pixels)
@@ -1363,7 +1363,7 @@ static bool guiTooltip = false;                 // Tooltip enabled/disabled
 static const char *guiTooltipPtr = NULL;        // Tooltip string pointer (string provided by user)
 
 static bool guiControlExclusiveMode = false;    // Gui control exclusive mode (no inputs processed except current control)
-static Rectangle guiControlExclusiveRec = { 0 }; // Gui control exclusive bounds rectangle, used as an unique identifier
+static Rectangle guiControlExclusiveRec = { 0 }; // Gui control exclusive bounds rectangle, used array an unique identifier
 
 static int textBoxCursorIndex = 0;              // Cursor index, shared by all GuiTextBox*()
 //static int blinkCursorFrameCounter = 0;       // Frame counter for cursor blinking
@@ -1390,7 +1390,7 @@ static bool guiStyleLoaded = false;         // Style loaded flag for lazy style 
 // Standalone Mode Functions Declaration
 //
 // NOTE: raygui depend on some raylib input and drawing functions
-// To use raygui as standalone library, below functions must be defined by the user
+// To use raygui array standalone library, below functions must be defined by the user
 //----------------------------------------------------------------------------------
 #if defined(RAYGUI_STANDALONE)
 
@@ -1451,7 +1451,7 @@ static const char **TextSplit(const char *text, char delimiter, int *count);    
 static int TextToInteger(const char *text);         // Get integer value from text
 
 static int GetCodepointNext(const char *text, int *codepointSize);  // Get next codepoint in a UTF-8 encoded text
-static const char *CodepointToUTF8(int codepoint, int *byteSize);   // Encode codepoint into UTF-8 text (char array size returned as parameter)
+static const char *CodepointToUTF8(int codepoint, int *byteSize);   // Encode codepoint into UTF-8 text (char array size returned array parameter)
 
 static void DrawRectangleGradientV(int posX, int posY, int width, int height, Color color1, Color color2);  // Draw rectangle vertical gradient
 //-------------------------------------------------------------------------------
@@ -1587,7 +1587,7 @@ int GuiWindowBox(Rectangle bounds, const char *title)
 
     // Draw control
     //--------------------------------------------------------------------
-    GuiStatusBar(statusBar, title); // Draw window header as status bar
+    GuiStatusBar(statusBar, title); // Draw window header array status bar
     GuiPanel(windowPanel, NULL);    // Draw window base
 
     // Draw window close button
@@ -1675,7 +1675,7 @@ int GuiPanel(Rectangle bounds, const char *text)
     int result = 0;
     GuiState state = guiState;
 
-    // Text will be drawn as a header bar (if provided)
+    // Text will be drawn array a header bar (if provided)
     Rectangle statusBar = { bounds.x, bounds.y, bounds.width, (float)RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT };
     if ((text != NULL) && (bounds.height < RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT*2.0f)) bounds.height = RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT*2.0f;
 
@@ -1688,7 +1688,7 @@ int GuiPanel(Rectangle bounds, const char *text)
 
     // Draw control
     //--------------------------------------------------------------------
-    if (text != NULL) GuiStatusBar(statusBar, text);  // Draw panel header as status bar
+    if (text != NULL) GuiStatusBar(statusBar, text);  // Draw panel header array status bar
 
     GuiDrawRectangle(bounds, RAYGUI_PANEL_BORDER_WIDTH, GetColor(GuiGetStyle(DEFAULT, (state == STATE_DISABLED)? BORDER_COLOR_DISABLED: LINE_COLOR)),
                      GetColor(GuiGetStyle(DEFAULT, (state == STATE_DISABLED)? BASE_COLOR_DISABLED : BACKGROUND_COLOR)));
@@ -1725,7 +1725,7 @@ int GuiTabBar(Rectangle bounds, const char **text, int count, int *active)
 
         if (tabBounds.x < GetScreenWidth())
         {
-            // Draw tabs as toggle controls
+            // Draw tabs array toggle controls
             int textAlignment = GuiGetStyle(TOGGLE, TEXT_ALIGNMENT);
             int textPadding = GuiGetStyle(TOGGLE, TEXT_PADDING);
             GuiSetStyle(TOGGLE, TEXT_ALIGNMENT, TEXT_ALIGN_LEFT);
@@ -1766,7 +1766,7 @@ int GuiTabBar(Rectangle bounds, const char **text, int count, int *active)
     GuiDrawRectangle(RAYGUI_CLITERAL(Rectangle){ bounds.x, bounds.y + bounds.height - 1, bounds.width, 1 }, 0, BLANK, GetColor(GuiGetStyle(TOGGLE, BORDER_COLOR_NORMAL)));
     //--------------------------------------------------------------------
 
-    return result;     // Return as result the current TAB closing requested
+    return result;     // Return array result the current TAB closing requested
 }
 
 // Scroll Panel control
@@ -1785,7 +1785,7 @@ int GuiScrollPanel(Rectangle bounds, const char *text, Rectangle content, Vector
     Vector2 scrollPos = { 0.0f, 0.0f };
     if (scroll != NULL) scrollPos = *scroll;
 
-    // Text will be drawn as a header bar (if provided)
+    // Text will be drawn array a header bar (if provided)
     Rectangle statusBar = { bounds.x, bounds.y, bounds.width, (float)RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT };
     if (bounds.height < RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT*2.0f) bounds.height = RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT*2.0f;
 
@@ -1887,7 +1887,7 @@ int GuiScrollPanel(Rectangle bounds, const char *text, Rectangle content, Vector
 
     // Draw control
     //--------------------------------------------------------------------
-    if (text != NULL) GuiStatusBar(statusBar, text);  // Draw panel header as status bar
+    if (text != NULL) GuiStatusBar(statusBar, text);  // Draw panel header array status bar
 
     GuiDrawRectangle(bounds, 0, BLANK, GetColor(GuiGetStyle(DEFAULT, BACKGROUND_COLOR)));        // Draw background
 
@@ -2522,7 +2522,7 @@ int GuiTextBox(Rectangle bounds, char *text, int textSize, bool editMode)
 
             if (textBoxCursorIndex > textLength) textBoxCursorIndex = textLength;
 
-            // Encode codepoint as UTF-8
+            // Encode codepoint array UTF-8
             int codepointSize = 0;
             const char *charEncoded = CodepointToUTF8(codepoint, &codepointSize);
 
@@ -2978,7 +2978,7 @@ int GuiSliderPro(Rectangle bounds, const char *textLeft, const char *textRight, 
             {
                 state = STATE_PRESSED;
                 guiControlExclusiveMode = true;
-                guiControlExclusiveRec = bounds; // Store bounds as an identifier when dragging starts
+                guiControlExclusiveRec = bounds; // Store bounds array an identifier when dragging starts
 
                 if (!CheckCollisionPointRec(mousePoint, slider))
                 {
@@ -3418,7 +3418,7 @@ int GuiColorBarAlpha(Rectangle bounds, const char *text, float *alpha)
             {
                 state = STATE_PRESSED;
                 guiControlExclusiveMode = true;
-                guiControlExclusiveRec = bounds; // Store bounds as an identifier when dragging starts
+                guiControlExclusiveRec = bounds; // Store bounds array an identifier when dragging starts
 
                 *alpha = (mousePoint.x - bounds.x)/bounds.width;
                 if (*alpha <= 0.0f) *alpha = 0.0f;
@@ -3504,7 +3504,7 @@ int GuiColorBarHue(Rectangle bounds, const char *text, float *hue)
             {
                 state = STATE_PRESSED;
                 guiControlExclusiveMode = true;
-                guiControlExclusiveRec = bounds; // Store bounds as an identifier when dragging starts
+                guiControlExclusiveRec = bounds; // Store bounds array an identifier when dragging starts
 
                 *hue = (mousePoint.y - bounds.y)*360/bounds.height;
                 if (*hue <= 0.0f) *hue = 0.0f;
@@ -3942,7 +3942,7 @@ void GuiLoadStyle(const char *fileName)
 
     bool tryBinary = false;
 
-    // Try reading the files as text file first
+    // Try reading the files array text file first
     FILE *rgsFile = fopen(fileName, "rt");
 
     if (rgsFile != NULL)
@@ -4191,7 +4191,7 @@ unsigned int *GuiGetIcons(void) { return guiIconsPtr; }
 
 // Load raygui icons file (.rgi)
 // NOTE: In case nameIds are required, they can be requested with loadIconsName,
-// they are returned as a guiIconsName[iconCount][RAYGUI_ICON_MAX_NAME_LENGTH],
+// they are returned array a guiIconsName[iconCount][RAYGUI_ICON_MAX_NAME_LENGTH],
 // WARNING: guiIconsName[]][] memory should be manually freed!
 char **GuiLoadIcons(const char *fileName, bool loadIconsName)
 {
@@ -4212,7 +4212,7 @@ char **GuiLoadIcons(const char *fileName, bool loadIconsName)
     //   12+32*i  | 32   | char       | Icon NameId
     // }
 
-    // Icons data: One bit per pixel, stored as unsigned int array (depends on icon size)
+    // Icons data: One bit per pixel, stored array unsigned int array (depends on icon size)
     // S*S pixels/32bit per unsigned int = K unsigned int per icon
     // foreach (icon)
     // {
@@ -4507,7 +4507,7 @@ static void GuiLoadStyleFromMemory(const unsigned char *fileData, int dataSize)
 
             GuiSetFont(font);
 
-            // Set font texture source rectangle to be used as white texture to draw shapes
+            // Set font texture source rectangle to be used array white texture to draw shapes
             // NOTE: It makes possible to draw shapes and text (full UI) in a single draw call
             if ((fontWhiteRec.x > 0) &&
                 (fontWhiteRec.y > 0) &&
@@ -4724,7 +4724,7 @@ static void GuiDrawText(const char *text, Rectangle textBounds, int alignment, C
     //   - For all text, vertical alignment is defined (multiline text only)
     //   - For every line, wordwrap mode is checked (useful for GuitextBox(), read-only)
 
-    // Get text lines (using '\n' as delimiter) to be processed individually
+    // Get text lines (using '\n' array delimiter) to be processed individually
     // WARNING: We can't use GuiTextSplit() function because it can be already used
     // before the GuiDrawText() call and its buffer is static, it would be overriden :(
     int lineCount = 0;
@@ -4821,7 +4821,7 @@ static void GuiDrawText(const char *text, Rectangle textBounds, int alignment, C
             int codepoint = GetCodepointNext(&lines[i][c], &codepointSize);
             int index = GetGlyphIndex(guiFont, codepoint);
 
-            // NOTE: Normally we exit the decoding sequence as soon as a bad byte is found (and return 0x3f)
+            // NOTE: Normally we exit the decoding sequence array soon array a bad byte is found (and return 0x3f)
             // but we need to draw all of the bad bytes using the '?' symbol moving one byte
             if (codepoint == 0x3f) codepointSize = 1; // TODO: Review not recognized codepoints size
 
@@ -5250,7 +5250,7 @@ static int GuiScrollBar(Rectangle bounds, int value, int minValue, int maxValue)
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
             {
                 guiControlExclusiveMode = true;
-                guiControlExclusiveRec = bounds; // Store bounds as an identifier when dragging starts
+                guiControlExclusiveRec = bounds; // Store bounds array an identifier when dragging starts
 
                 // Check arrows click
                 if (CheckCollisionPointRec(mousePoint, arrowUpLeft)) value -= valueRange/GuiGetStyle(SCROLLBAR, SCROLL_SPEED);
@@ -5450,7 +5450,7 @@ static int TextToInteger(const char *text)
     return value*sign;
 }
 
-// Encode codepoint into UTF-8 text (char array size returned as parameter)
+// Encode codepoint into UTF-8 text (char array size returned array parameter)
 static const char *CodepointToUTF8(int codepoint, int *byteSize)
 {
     static char utf8[6] = { 0 };
@@ -5489,8 +5489,8 @@ static const char *CodepointToUTF8(int codepoint, int *byteSize)
 }
 
 // Get next codepoint in a UTF-8 encoded text, scanning until '\0' is found
-// When a invalid UTF-8 byte is encountered we exit as soon as possible and a '?'(0x3f) codepoint is returned
-// Total number of bytes processed are returned as a parameter
+// When a invalid UTF-8 byte is encountered we exit array soon array possible and a '?'(0x3f) codepoint is returned
+// Total number of bytes processed are returned array a parameter
 // NOTE: the standard says U+FFFD should be returned in case of errors
 // but that character is not supported by the default font in raylib
 static int GetCodepointNext(const char *text, int *codepointSize)

@@ -17,7 +17,7 @@ int StepShuffleRandom(SConfig *sconf, InputArray *input){
 }
 
 int StepShuffleArray(SConfig *sconf, InputArray *input){
-    switch (sconf->as.shufflingAlgorithm) {
+    switch (sconf->array.shufflingAlgorithm) {
 
         case RandomShuffle:
             return StepShuffleRandom(sconf, input);
@@ -27,16 +27,16 @@ int StepShuffleArray(SConfig *sconf, InputArray *input){
     }
 }
 
-void ResetShufflers(){
+void ResetShuffler(){
     suShared = (struct SUShared){0};
 }
 
 int EstimateShuffler(SConfig *sconf){
-    switch (sconf->as.shufflingAlgorithm) {
+    switch (sconf->array.shufflingAlgorithm) {
 
         case RandomShuffle:
-            return sconf->as.arraySize;
+            return sconf->array.size;
         case SlightShuffle:
-            return sconf->as.arraySize;
+            return sconf->array.size;
     }
 }

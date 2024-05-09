@@ -1,27 +1,16 @@
 #include "InputArray.h"
 #include "malloc.h"
 
-void GenerateLinear(SConfig *sconf,InputArray *input){
+void GenerateArray(InputArray *input){
     for(int i = 0; i < input->filled; ++i)
         input->arr[i] = i;
 }
 
-void GenerateArray(SConfig *sconf, InputArray *input){
-    switch(sconf->as.inputArrayFunction){
-
-        case LinearArray:
-            GenerateLinear(sconf,input);
-            break;
-        case SqareRootArray:
-            break;
-    }
-}
-
-void InitInputArray(SConfig *sconf, InputArray *input){
-    input->arr = calloc(sconf->as.arraySize, sizeof(int));
-    input->size = sconf->as.arraySize;
-    input->filled = input->size;
-    GenerateArray(sconf,input);
+void InitInputArray(InputArray *input, int size){
+    input->arr = calloc(size, sizeof(int));
+    input->size = size;
+    input->filled = size;
+    GenerateArray(input);
 }
 
 void ResizeInputArray(InputArray *input, int newSize){

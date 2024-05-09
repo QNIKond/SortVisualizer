@@ -17,13 +17,13 @@ int activeTextBox = 0;
 char textBoxData[8][20] = {0};
 
 void UpdateDrawTabHeads(SConfig *sconf, Rectangle bounds){
-    if(sconf->currentTab){
+    if(sconf->visual.currentTab){
         if(GuiButton((Rectangle){bounds.x,bounds.y,bounds.width/2,BIGBUTTONHEIGHT},""))
-            sconf->currentTab = 0;
+            sconf->visual.currentTab = 0;
     }
     else{
         if(GuiButton((Rectangle){bounds.x + bounds.width/2,bounds.y,bounds.width/2,BIGBUTTONHEIGHT},""))
-            sconf->currentTab = 1;
+            sconf->visual.currentTab = 1;
     }
     GuiSetStyle(DEFAULT,TEXT_ALIGNMENT,TEXT_ALIGN_MIDDLE);
     GuiLabel((Rectangle){bounds.x,bounds.y,bounds.width/2,BIGBUTTONHEIGHT},"Visualisation");
@@ -45,9 +45,9 @@ int UpdateDrawSlider(Rectangle *bounds, const char *text, int *data, const int m
              sliderRect.x+sliderRect.width,sliderRect.y+sliderRect.height/2,BLACK);
     int changed = GuiSlider(sliderRect, "", "", &value, (float)min, (float)max);
     *data = (int)value;
+
     if(GuiTextBox((Rectangle){bounds->x + bounds->width-TEXTBOXWIDTH,bounds->y+VPADDING
-            ,TEXTBOXWIDTH,LINEHEIGHT-VPADDING*2},textBoxData[id],20,id == activeTextBox))
-    {
+            ,TEXTBOXWIDTH,LINEHEIGHT-VPADDING*2},textBoxData[id],20,id == activeTextBox)){
         if(activeTextBox == id) {
             activeTextBox = SNOTACTIVE;
             char *err;
@@ -107,28 +107,20 @@ void DrawSplitter(Rectangle *bounds){
 
 void DrawStartResetButtons(SConfig *sconf, Rectangle *bounds){
     GuiSetStyle(DEFAULT,TEXT_ALIGNMENT,TEXT_ALIGN_MIDDLE);
-    if(ANIMRUNNING(sconf->animState)) {
+    if(sconf->isRunning) {
         if (GuiButton((Rectangle) {bounds->x, GetScreenHeight() - PADDING - BIGBUTTONHEIGHT,
-                                   (bounds->width - PADDING) / 2, BIGBUTTONHEIGHT}, sconf->vs.isOnPause ? "RUN" : "STOP"))
-            sconf->vs.isOnPause = !sconf->vs.isOnPause;
+                                   (bounds->width - PADDING) / 2, BIGBUTTONHEIGHT}, sconf->visual.isOnPause ? "RUN" : "STOP"))
+            sconf->visual.isOnPause = !sconf->visual.isOnPause;
     }
-    else{
-        if (GuiButton((Rectangle) {bounds->x, GetScreenHeight() - PADDING - BIGBUTTONHEIGHT,
-                                   (bounds->width - PADDING) / 2, BIGBUTTONHEIGHT}, "RUN")) {
-            sconf->animState = AnimShuffling;
-
-        }
-    }
+    else
+        sconf->runBtn = GuiButton((Rectangle) {bounds->x, GetScreenHeight() - PADDING - BIGBUTTONHEIGHT,
+                                   (bounds->width - PADDING) / 2, BIGBUTTONHEIGHT}, "RUN");
 
     int defaultColor = GuiGetStyle(BUTTON,BASE_COLOR_NORMAL);
-    if(sconf->needsReloading)
+    if(sconf->array.updated)
         GuiSetStyle(BUTTON,BASE_COLOR_NORMAL, ALARMCOLOR);
-    if(GuiButton((Rectangle){PADDING/2 + bounds->width/2+bounds->x,GetScreenHeight()-PADDING-BIGBUTTONHEIGHT,
-                          (bounds->width-PADDING)/2, BIGBUTTONHEIGHT},"RESET")) {
-        sconf->animState = AnimStart;
-        sconf->as.updated = true;
-        sconf->vs.isOnPause = false;
-    }
+    sconf->resetBtn =  GuiButton((Rectangle){PADDING/2 + bounds->width/2+bounds->x,GetScreenHeight()-PADDING-BIGBUTTONHEIGHT,
+                          (bounds->width-PADDING)/2, BIGBUTTONHEIGHT},"RESET");
     GuiSetStyle(BUTTON,BASE_COLOR_NORMAL, defaultColor);
 }
 
@@ -140,8 +132,8 @@ void UpdateDrawVisTab(SConfig *sconf, Rectangle bounds){
     GuiSetStyle(DEFAULT,TEXT_ALIGNMENT,TEXT_ALIGN_LEFT);
     //UpdateDrawCheckBox(&bounds,"Show info",&sconf->vs.showInfo);
     //UpdateDrawCheckBox(&bounds,"Show progress bars",&sconf->vs.showProgressBars);
-    UpdateDrawCheckBox(&bounds,"Show shuffling",&sconf->vs.showShuffling);
-    UpdateDrawSlider(&bounds,"Animation length(s):",&sconf->vs.animationLength,2,45,id++);
+    UpdateDrawCheckBox(&bounds,"Show shuffling",&sconf->visual.showShuffling);
+    UpdateDrawSlider(&bounds, "Animation length(s):", &sconf->visual.animationLength, 2, 45, id++);
     DrawSplitter(&bounds);
     //UpdateDrawSubButton(&bounds,0,"", ColorToInt(sconf->vs.col2));
     //UpdateDrawSubButton(&bounds,1,"",ColorToInt(sconf->vs.col1));
@@ -149,15 +141,15 @@ void UpdateDrawVisTab(SConfig *sconf, Rectangle bounds){
     //UpdateDrawCheckBox(&bounds,"Mirrored",&sconf->vs.mirrored);
     //UpdateDrawCheckBox(&bounds,"Connected dots",&sconf->vs.connectedDots);
     //UpdateDrawCheckBox(&bounds,"Hollow",&sconf->vs.hollow);
-    //UpdateDrawCheckBox(&bounds,"Show value as length",&sconf->vs.showValueAsLength);
+    //UpdateDrawCheckBox(&bounds,"Show value array length",&sconf->vs.showValueAsLength);
     //UpdateDrawCheckBox(&bounds,"Disparity",&sconf->vs.disparity);
     //UpdateDrawDropdown(&bounds,"Visualisation","Bars;Pyramid;Circle",&sconf->vs.visualisation,0,&tbstates[2]);
     //DrawSplitter(&bounds);
 
-    //sconf->as.updated |= UpdateDrawDropdown(&bounds,"Shuffling algorithm","Random;Slight",&sconf->as.shufflingAlgorithm,0,&tbstates[3]);
-    sconf->as.updated |= UpdateDrawSlider(&bounds,"Array size:",&sconf->as.arraySize,5,4000,id++);
+    //sconf->array.updated |= UpdateDrawDropdown(&bounds,"Shuffling algorithm","Random;Slight",&sconf->array.shufflingAlgorithm,0,&tbstates[3]);
+    sconf->array.updated |= UpdateDrawSlider(&bounds, "Array size:", &sconf->array.size, 5, 4000, id++);
     UpdateDrawSubButton(&bounds,0,"?", GuiGetStyle(BUTTON,BASE_COLOR_NORMAL));
-    sconf->as.updated |= UpdateDrawDropdown(&bounds,"Sorting algorithm","Bubble sort; Shaker sort; Gravity sort",&sconf->as.sortingAlgorithm,1,id++);
+    sconf->array.updated |= UpdateDrawDropdown(&bounds, "Sorting algorithm", "Bubble sort; Shaker sort; Gravity sort", &sconf->array.sortingAlgorithm, 1, id++);
 }
 
 void UpdateDrawProphTab(SConfig *sconf, Rectangle bounds){
@@ -173,7 +165,7 @@ void UpdateDrawSettingTab(SConfig *sconf, Rectangle bounds){
     bounds.width -= PADDING*2;
     GuiSetStyle(SLIDER,BORDER_WIDTH,0);
     GuiSetStyle(SLIDER,BASE_COLOR_NORMAL,0);
-    if(!sconf->currentTab)
+    if(!sconf->visual.currentTab)
         UpdateDrawVisTab(sconf, bounds);
     else
         UpdateDrawProphTab(sconf, bounds);

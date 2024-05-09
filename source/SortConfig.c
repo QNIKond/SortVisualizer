@@ -1,39 +1,17 @@
 #include "SortConfig.h"
 
-void InitializeSortConfig(SConfig *sconfig){
+void InitSortConfig(SConfig *sconfig){
     *sconfig = (SConfig){0};
-    sconfig->as.arraySize = 40;
-    sconfig->vs.showValueAsLength = true;
-    sconfig->vs.col1 = WHITE;
-    sconfig->vs.col2 = RED;
-    sconfig->vs.animationLength = 15;
-    sconfig->vs.showShuffling = true;
-    sconfig->vs.showProgressBars = true;
-    sconfig->needsReloading = true;
+    sconfig->array.size = 40;
+    sconfig->visual.showValueAsLength = true;
+    sconfig->visual.col1 = WHITE;
+    sconfig->visual.col2 = RED;
+    sconfig->visual.animationLength = 15;
+    sconfig->visual.showShuffling = true;
+    sconfig->visual.showProgressBars = true;
 }
 
-int SyncConfigs(SConfig *back, SConfig *front){
-    bool shouldReload = false;
-    back->vs = front->vs;
-    back->currentTab = front->currentTab;
-    if(front->as.updated)
-        back->needsReloading = true;
-    if((back->needsReloading == true) && ((front->animState == AnimStart) ||
-            ((front->animState == AnimShuffling) && (back->animState == AnimEnd)))){
-        back->needsReloading = false;
-        front->as.updated = false;
-        back->as = front->as;
-        front->needsReloading = back->needsReloading;
-        shouldReload = true;
-    }
-    front->needsReloading = back->needsReloading;
-    if(((front->animState == AnimStart) && (back->animState != AnimStart)) ||
-            ((front->animState == AnimShuffling) && !ANIMRUNNING(back->animState))){
-        back->animState = front->animState;
-        shouldReload = true;
-    }
-    return shouldReload;
-}
+
 //front back
 // st shuf  |
 // st sort  | - reset

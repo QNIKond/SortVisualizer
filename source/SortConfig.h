@@ -8,11 +8,6 @@ typedef enum {
     } SortingAlgorithm;
 
 typedef enum {
-    LinearArray,
-    SqareRootArray
-}InputArrayFunction;
-
-typedef enum {
     RandomShuffle,
     SlightShuffle
 } ShufflingAlgorithm;
@@ -28,18 +23,14 @@ typedef enum {
     GradientColoring,
     RainbowColoring
 } Coloring;
-#define ANIMLENMIN 2
-#define ANIMLENMAX 100
+
 typedef struct{
     struct {
+        int size;
         SortingAlgorithm sortingAlgorithm;
-        InputArrayFunction inputArrayFunction;
-        int arraySize;
-        int arrayModifier;
         ShufflingAlgorithm shufflingAlgorithm;
-
         bool updated;
-    } as;
+    } array;
     struct {
         Visualisation visualisation;
         bool disparity;
@@ -56,23 +47,14 @@ typedef struct{
         bool showInfo;
 
         bool isOnPause;
-    } vs;
-    bool currentTab;
-    bool needsReloading;
+        int currentTab;
 
-    int algFrames;
-    int animFrames;
-    int algCount;
-    int animCount;
-
-    enum {
-        AnimStart = 0,
-        AnimShuffling,
-        AnimSorting,
-        AnimEnd
-    } animState;
+    } visual;
+    bool runBtn;
+    bool resetBtn;
+    bool isRunning;
 } SConfig;
-#define ANIMRUNNING(X) (((X)==AnimSorting) || ((X)==AnimShuffling))
-void InitializeSortConfig(SConfig *sconfig);
 
-int SyncConfigs(SConfig *back, SConfig *front);
+void InitSortConfig(SConfig *sconfig);
+
+//int SyncConfigs(SConfig *back, SConfig *front, bool fixed);

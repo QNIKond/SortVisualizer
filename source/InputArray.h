@@ -7,9 +7,9 @@ typedef struct{
     int size;
 } InputArray;
 
-void InitInputArray(SConfig *sconf, InputArray *input);
+void InitInputArray(InputArray *input, int size);
 
-void GenerateArray(SConfig *sconf, InputArray *input);
+void GenerateArray(InputArray *input);
 
 void ResizeInputArray(InputArray *input, int newSize);
 

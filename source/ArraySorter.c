@@ -18,7 +18,7 @@ int StepBubbleSort(InputArray *input, SortData *data){
 }
 
 int StepSortArray(SConfig *sconf, InputArray *input, SortData *data){
-    switch (sconf->as.sortingAlgorithm) {
+    switch (sconf->array.sortingAlgorithm) {
 
         case BubbleSort:
             return StepBubbleSort(input, data);
@@ -29,14 +29,14 @@ int StepSortArray(SConfig *sconf, InputArray *input, SortData *data){
     }
 }
 
-void ResetSorter(SortData *data){
+void ResetSorter(SortData *data, int arraySize){
     *data = (SortData){0};
     data->isSorted = true;
 }
 
 int EstimateSorter(SConfig *sconf, InputArray *input, InputArray *sorted){
     SortData data;
-    ResetSorter(&data);
+    ResetSorter(&data, input->filled);
     ResizeInputArray(sorted, input->filled);
     for(int i = 0; i < input->filled; ++i){
         sorted->arr[i] = input->arr[i];

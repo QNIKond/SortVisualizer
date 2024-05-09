@@ -3,6 +3,6 @@
 
 int StepShuffleArray(SConfig *sconf, InputArray *input);
 
-void ResetShufflers();
+void ResetShuffler();
 
 int EstimateShuffler(SConfig *sconf);
