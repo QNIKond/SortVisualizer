@@ -1,5 +1,5 @@
 #include "SettingsTab.h"
-#include "../raygui.h"
+#include "../external/raygui.h"
 #include "stdio.h"
 #include "stdlib.h"
 

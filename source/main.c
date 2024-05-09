@@ -1,9 +1,9 @@
 #include "raylib.h"
 #define RAYGUI_IMPLEMENTATION
-#include "../raygui.h"
+#include "../external/raygui.h"
 #include "SortConfig.h"
 #include "SettingsTab.h"
-#include "../darkTheme.h"
+#include "../external/darkTheme.h"
 #include "SortVisualiser.h"
 #include "ArrayShuffler.h"
 #include "ArraySorter.h"
@@ -65,6 +65,8 @@ void UpdateDrawFrame(void)
     else
         ClearBackground((Color) {t,t,t,0xff});
     UpdateDrawSettingTab(&frontEnd, (Rectangle){0, 0, 200, GetScreenHeight()});
+
+
     if(SyncConfigs(&backEnd,&frontEnd)) {
         ResetShufflers();
         ResetSorter(&sortData);
@@ -72,10 +74,6 @@ void UpdateDrawFrame(void)
         GenerateArray(&backEnd,&arr);
         if(!backEnd.vs.showShuffling){
             while(!StepShuffleArray(&backEnd, &arr));
-            /*backEnd.animState = AnimSorting;
-            frontEnd.animState = AnimSorting;
-            algFrames = EstimateSorter(&backEnd,&arr,&sorted);
-            animFrames = backEnd.vs.animationLength*60;*/
         }else {
             backEnd.algFrames = EstimateShuffler(&backEnd);
             backEnd.animFrames = SHUFFLEDURATION * 60;
@@ -83,6 +81,7 @@ void UpdateDrawFrame(void)
         backEnd.algCount = 0;
         backEnd.animCount = 0;
     }
+
 
     if(!backEnd.vs.isOnPause) {
         if (backEnd.animState == AnimShuffling) {
@@ -103,6 +102,7 @@ void UpdateDrawFrame(void)
                 }
             }
 
+
         } else if (backEnd.animState == AnimSorting) {
             if(backEnd.vs.animationLength*60-backEnd.animCount-1)
                 ++backEnd.animCount;
@@ -117,6 +117,8 @@ void UpdateDrawFrame(void)
                 }
             }
         }
+
+
     }
     DrawArray((Rectangle){200,0,GetScreenWidth()-200,GetScreenHeight()}, &backEnd, &arr);
     if(IsKeyDown(KEY_F))
