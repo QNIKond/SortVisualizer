@@ -18,46 +18,36 @@ int StepBubbleSort(InputArray *input, SortData *data){
 }
 
 int StepShakerSort(InputArray *input, SortData *data){
-    if(data->leftBoundary > data->rightBoundary) {
+    if(data->isSorted){
+        data->isSorted = false;
+    }
+    if(data->leftBoundary >= data->rightBoundary || data->unreplacementCounter >= data->rightBoundary - data->leftBoundary) {
        data->isSorted = true;
        data->i = 0;
-
        return 1;
     }
-    if(data->isRightDirection) {
-        if(data->i < data->rightBoundary) {
-            if(input->arr[data->i] > input->arr[data->i + 1]) {
-                int t = input->arr[data->i];
-                input->arr[data->i] = input->arr[data->i + 1];
-                input->arr[data->i + 1] = t;
-                //data->isSorted = false;
-                data->isReplaced = true;
-            }
-            ++data->i;
+    if(data->i <= data->rightBoundary - 1 && data->i >= data->leftBoundary) {
+        if(input->arr[data->i] > input->arr[data->i + 1]) {
+            int t = input->arr[data->i];
+            input->arr[data->i] = input->arr[data->i + 1];
+            input->arr[data->i + 1] = t;
+            data->unreplacementCounter = 0;
         } else {
-            data->isRightDirection = !data->isRightDirection;
-            data->isReplaced = false;
-            --data->rightBoundary;
-            --data->i;
+            ++data->unreplacementCounter;
         }
     } else {
-        if(data->i > data->leftBoundary) {
-            if(input->arr[data->i - 1] > input->arr[data->i]) {
-                int t = input->arr[data->i];
-                input->arr[data->i] = input->arr[data->i - 1];
-                input->arr[data->i - 1] = t;
-                //data->isSorted = false;
-                data->isReplaced = true;
-            }
-            --data->i;
-        } else {
-            data->isRightDirection = !data->isRightDirection;
-            data->isReplaced = false;
-            ++data->leftBoundary;
-            ++data->i;
-        }
+        data->direction *= -1;
+        data->unreplacementCounter = 0;
     }
-
+    if(data->i > data->rightBoundary) {
+        --data->rightBoundary;
+        --data->i;
+    }
+    if(data->i < data->leftBoundary) {
+        ++data->leftBoundary;
+        ++data->i;
+    }
+    data->i += data->direction;
     return 0;
 }
 
@@ -76,8 +66,8 @@ int StepSortArray(SConfig *sconf, InputArray *input, SortData *data){
 void ResetSorter(SortData *data, int arraySize){
     *data = (SortData){.i = 0, .leftBoundary = 0, .rightBoundary = arraySize - 1};
     data->isSorted = true;
-    data->isRightDirection = true;
-    data->isReplaced = true;
+    data->direction = 1;
+    data->unreplacementCounter = 0;
 }
 
 int EstimateSorter(SConfig *sconf, InputArray *input, InputArray *sorted){

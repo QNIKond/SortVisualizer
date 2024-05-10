@@ -3,11 +3,11 @@
 
 typedef struct{
     int i;
+    bool isSorted;
     int leftBoundary;
     int rightBoundary;
-    bool isSorted;
-    bool isRightDirection;
-    bool isReplaced;
+    int direction;
+    int unreplacementCounter;
 } SortData;
 
 int StepSortArray(SConfig *sconf, InputArray *input, SortData *data);
