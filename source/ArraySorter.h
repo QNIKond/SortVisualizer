@@ -4,6 +4,10 @@
 typedef struct{
     int i;
     bool isSorted;
+    int leftBoundary;
+    int rightBoundary;
+    int direction;
+    int unreplacementCounter;
 } SortData;
 
 int StepSortArray(SConfig *sconf, InputArray *input, SortData *data);
