@@ -122,7 +122,7 @@ void SwitchAnimState(enum AnimState state) {
     }
 }
 
-void SyncConfigs(SConfig *input){
+void SyncConfigsForVis(SConfig *input){
     if(animState == AnimStart) {
         input->visual.isOnPause = false;
         if (input->array.updated) {

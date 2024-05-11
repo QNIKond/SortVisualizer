@@ -5,8 +5,7 @@
 #include "SettingsTab.h"
 #include "../external/darkTheme.h"
 #include "SortVisualiser.h"
-#include "ArrayShuffler.h"
-#include "ArraySorter.h"
+#include "SortProphiler.h"
 
 void UpdateDrawFrame(void);
 
@@ -35,12 +34,13 @@ int main()
 
     InitSortConfig(&input);
     InitSortVisualizer();
-
+    InitProphiler();
     while (!WindowShouldClose())
     {
         UpdateDrawFrame();
     }
     FreeSortVisualizer();
+    FreeProphiler();
     UnloadImage(icon);
     return 0;
 }
@@ -53,9 +53,17 @@ void UpdateDrawFrame(void)
     ClearBackground((Color) {0x2c,0x2c,0x2c,0xff});
 
     UpdateDrawSettingTab(&input, (Rectangle){0, 0, SETTABWIDTH, GetScreenHeight()});
-    SyncConfigs(&input);
-    UpdateDrawSortAnimation((Rectangle){SETTABWIDTH, 0, GetScreenWidth() - SETTABWIDTH, GetScreenHeight()});
 
+    Rectangle mainFrame = (Rectangle){SETTABWIDTH, 0, GetScreenWidth() - SETTABWIDTH, GetScreenHeight()};
+    if(input.visual.currentTab == 0) {
+        SyncConfigsForVis(&input);
+        UpdateDrawSortAnimation(mainFrame);
+    }
+    else {
+        SyncConfigsForProph(&input);
+        UpdateDrawProphiler(mainFrame);
+    }
+    
     if(IsKeyDown(KEY_F))
         showFPS = !showFPS;
     if(showFPS)

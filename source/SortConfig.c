@@ -9,6 +9,10 @@ void InitSortConfig(SConfig *sconfig){
     sconfig->visual.animationLength = 15;
     sconfig->visual.showShuffling = true;
     sconfig->visual.showProgressBars = true;
+    sconfig->array.sortingAlgorithm = BubbleSort;
+    sconfig->proph.sortingAlgorithm = BubbleSort;
+    sconfig->graph.showDots = true;
+    sconfig->graph.col1 = RED;
 }
 
 

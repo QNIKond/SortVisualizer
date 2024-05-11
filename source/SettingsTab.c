@@ -7,6 +7,7 @@
 #define BIGBUTTONHEIGHT (LINEHEIGHT*1.5)
 #define VPADDING 3
 #define VISLINESCOUNT 7//21
+#define PROPHLINESCOUNT 5//21
 #define TEXTBOXWIDTH 40
 #define PADDING 10
 #define ALARMCOLOR 0xDD1111FF
@@ -41,13 +42,20 @@ void UpdateDrawCheckBox(Rectangle *bounds, const char *text, bool *data){
 int UpdateDrawSlider(Rectangle *bounds, const char *text, int *data, const int min, const int max, int id){
     float value = (float)*data;
     Rectangle sliderRect = {bounds->x,bounds->y+VPADDING,bounds->width-PADDING-TEXTBOXWIDTH,LINEHEIGHT-VPADDING*2};
+    if(max>50000)
+        sliderRect.width-=TEXTBOXWIDTH;
     DrawLine(sliderRect.x,sliderRect.y+sliderRect.height/2,
              sliderRect.x+sliderRect.width,sliderRect.y+sliderRect.height/2,BLACK);
     int changed = GuiSlider(sliderRect, "", "", &value, (float)min, (float)max);
     *data = (int)value;
 
-    if(GuiTextBox((Rectangle){bounds->x + bounds->width-TEXTBOXWIDTH,bounds->y+VPADDING
-            ,TEXTBOXWIDTH,LINEHEIGHT-VPADDING*2},textBoxData[id],20,id == activeTextBox)){
+    Rectangle tbRect = {bounds->x + bounds->width-TEXTBOXWIDTH,bounds->y+VPADDING
+            ,TEXTBOXWIDTH,LINEHEIGHT-VPADDING*2};
+    if(max>50000){
+        tbRect.x -= TEXTBOXWIDTH;
+        tbRect.width += TEXTBOXWIDTH;
+    }
+    if(GuiTextBox(tbRect,textBoxData[id],20,id == activeTextBox)){
         if(activeTextBox == id) {
             activeTextBox = SNOTACTIVE;
             char *err;
@@ -149,11 +157,17 @@ void UpdateDrawVisTab(SConfig *sconf, Rectangle bounds){
     //sconf->array.updated |= UpdateDrawDropdown(&bounds,"Shuffling algorithm","Random;Slight",&sconf->array.shufflingAlgorithm,0,&tbstates[3]);
     sconf->array.updated |= UpdateDrawSlider(&bounds, "Array size:", &sconf->array.size, 5, 4000, id++);
     UpdateDrawSubButton(&bounds,0,"?", GuiGetStyle(BUTTON,BASE_COLOR_NORMAL));
-    sconf->array.updated |= UpdateDrawDropdown(&bounds, "Sorting algorithm", "Bubble sort; Shaker sort; Gravity sort", &sconf->array.sortingAlgorithm, 1, id++);
+    sconf->array.updated |= UpdateDrawDropdown(&bounds, "Sorting algorithm","Insertion sort; Shell sort; Bubble sort; Shaker sort", &sconf->array.sortingAlgorithm, 1, id++);
 }
 
 void UpdateDrawProphTab(SConfig *sconf, Rectangle bounds){
-
+    int id = SNOTACTIVE+1;
+    bounds.height = LINEHEIGHT;
+    bounds.y += LINEHEIGHT*PROPHLINESCOUNT;
+    DrawStartResetButtons(sconf,&bounds);
+    sconf->array.updated |= UpdateDrawSlider(&bounds, "Max array size:", &sconf->proph.maxSize, 5, 4000000, id++);
+    sconf->array.updated |= UpdateDrawSlider(&bounds, "Min array size:", &sconf->proph.minSize, 5, 4000000, id++);
+    sconf->array.updated |= UpdateDrawDropdown(&bounds, "Sorting algorithm","Insertion sort; Shell sort; Bubble sort; Shaker sort", &sconf->proph.sortingAlgorithm, 0, id++);
 }
 
 void UpdateDrawSettingTab(SConfig *sconf, Rectangle bounds){

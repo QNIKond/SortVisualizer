@@ -53,15 +53,18 @@ int StepShakerSort(InputArray *input, SortData *data){
 
 int StepSortArray(SConfig *sconf, InputArray *input, SortData *data){
     switch (sconf->array.sortingAlgorithm) {
-
+        case InsertionSort:
+            break;
+        case ShellSort:
+            break;
         case BubbleSort:
             return StepBubbleSort(input, data);
         case ShakerSort:
             return StepShakerSort(input, data);
-        case GravitySort:
-            return 0;
     }
+    return 1;
 }
+
 
 void ResetSorter(SortData *data, int arraySize){
     *data = (SortData){.i = 0, .leftBoundary = 0, .rightBoundary = arraySize - 1};

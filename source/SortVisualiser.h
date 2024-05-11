@@ -3,7 +3,7 @@
 #include "SortConfig.h"
 #include "InputArray.h"
 
-void SyncConfigs(SConfig *input);
+void SyncConfigsForVis(SConfig *input);
 
 void UpdateDrawSortAnimation(Rectangle bounds);
 

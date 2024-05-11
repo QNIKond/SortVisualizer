@@ -2,9 +2,10 @@
 #include "raylib.h"
 
 typedef enum {
+    InsertionSort = 0,
+    ShellSort,
     BubbleSort,
     ShakerSort,
-    GravitySort
     } SortingAlgorithm;
 
 typedef enum {
@@ -50,11 +51,26 @@ typedef struct{
         int currentTab;
 
     } visual;
+    struct {
+        SortingAlgorithm sortingAlgorithm;
+        ShufflingAlgorithm shufflingAlgorithm;
+        int minSize;
+        int maxSize;
+
+        bool updated;
+    } proph;
+
+    struct {
+        Color col1;
+        bool showDots;
+    } graph;
+
     bool runBtn;
     bool resetBtn;
     bool isRunning;
+    bool isProphiling;
 } SConfig;
 
 void InitSortConfig(SConfig *sconfig);
 
-//int SyncConfigs(SConfig *back, SConfig *front, bool fixed);
+//int SyncConfigsForVis(SConfig *back, SConfig *front, bool fixed);
