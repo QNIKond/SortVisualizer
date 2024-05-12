@@ -14,8 +14,8 @@ void InitSortConfig(SConfig *sconfig){
     sconfig->proph.minSize = 100;
     sconfig->proph.maxSize = 100000;
     sconfig->proph.nCount = 20;
-    sconfig->graph.showDots = false;
-    sconfig->graph.col1 = RED;
+    sconfig->graph.staticY = false;
+    sconfig->graph.col1 = BLUE;
 }
 
 

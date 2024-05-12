@@ -63,7 +63,7 @@ typedef struct{
 
     struct {
         Color col1;
-        bool showDots;
+        bool staticY;
     } graph;
 
     bool runBtn;
