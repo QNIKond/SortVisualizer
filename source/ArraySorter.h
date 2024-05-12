@@ -15,3 +15,5 @@ int StepSortArray(SConfig *sconf, InputArray *input, SortData *data);
 void ResetSorter(SortData *data, int arraySize);
 
 int EstimateSorter(SConfig *sconf, InputArray *input, InputArray *sorted);
+
+void FullShakerSort(InputArray *input);

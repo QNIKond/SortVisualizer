@@ -17,6 +17,36 @@ int StepBubbleSort(InputArray *input, SortData *data){
     return 0;
 }
 
+void FullShakerSort(InputArray *input){
+    int leftBoundary = 0;
+    int rightBoundary = input->filled - 1;
+    bool wasReplacement = true;
+
+    while ((leftBoundary <= rightBoundary) && wasReplacement) {
+        wasReplacement = false;
+
+        for (int i = rightBoundary; i >= leftBoundary; i--) {
+            if (input->arr[i] > input->arr[i + 1]) {
+                int t = input->arr[i];
+                input->arr[i] = input->arr[i + 1];
+                input->arr[i + 1] = t;
+                wasReplacement = true;
+            }
+        }
+        leftBoundary++;
+
+        for (int i = leftBoundary; i <= rightBoundary; i++) {
+            if (input->arr[i] > input->arr[i + 1]) {
+                int t = input->arr[i];
+                input->arr[i] = input->arr[i + 1];
+                input->arr[i + 1] = t;
+                wasReplacement = true;
+            }
+        }
+        rightBoundary--;
+    }
+}
+
 int StepShakerSort(InputArray *input, SortData *data){
     if(data->isSorted){
         data->isSorted = false;
