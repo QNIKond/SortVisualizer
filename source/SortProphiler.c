@@ -6,15 +6,17 @@
 #include "semaphore.h"
 #include "time.h"
 #include "stdio.h"
+#include "unistd.h"
 
 #define THREADSC 12
 
 bool atStart = true;
-
+#define TIMTEST CLOCK_PROCESS_CPUTIME_ID
 SConfig sc;
 InputArray arr1;
 int *graphData = 0;
 int gdSize = 0;
+int gdFilled = 0;
 int gdMaxValue;
 double nStep;
 pthread_mutex_t mutex;
@@ -40,17 +42,17 @@ void InitProphiler(){
 }
 
 int Bubble(InputArray *arr){
-    long long t;
-    time(&t);
-    int test = rand()%16;
-    return test;
+
+    double res = ((double)arr->filled*(double)arr->filled)/(10000);
+    usleep((int)res);
+    return 0;
     //return (t%213)*473 %16;
 }
 void *SortT(void *inref){
     ThreadInput *in = (ThreadInput*)inref;
     srand(in->seed);
     int i = in->offset;
-    while((i<sc.proph.nCount)) {
+    while((i<gdFilled)) {
         pthread_rwlock_rdlock(&tiLock);
         if(in->exit) {
             pthread_rwlock_unlock(&tiLock);
@@ -60,9 +62,16 @@ void *SortT(void *inref){
         in->arr.filled = (int)((double)i * nStep + sc.proph.minSize);
         GenerateArray(&in->arr);
         ShuffleArray(&sc,&in->arr);
-        int time = Bubble(&in->arr);
+        struct timespec start;
+        struct timespec end;
+        clock_gettime(CLOCK_MONOTONIC,&start);
+        Bubble(&in->arr);
+        clock_gettime(CLOCK_MONOTONIC,&end);
+        int time = (int)(end.tv_sec-start.tv_sec)*1000+(int)((end.tv_nsec-start.tv_nsec)*1e-6);
         pthread_mutex_lock(&mutex);
         graphData[i] = time;
+        if(time > gdMaxValue)
+            gdMaxValue = time;
         pthread_mutex_unlock(&mutex);
         i += in->step;
     }
@@ -78,15 +87,15 @@ void StartSortingThreads(){
     for(int i = 0; i < THREADSC; ++i){
         pthread_join(threads[i],NULL);
     }
-
-    if(gdSize<sc.proph.nCount){
-        gdSize = sc.proph.nCount;
+    gdFilled = sc.proph.nCount;
+    if(gdSize<gdFilled){
+        gdSize = gdFilled;
         graphData = realloc(graphData,gdSize*sizeof(int));
     }
-    for(int i = 0; i < sc.proph.nCount; ++i)
+    for(int i = 0; i < gdFilled; ++i)
         graphData[i] = 0;
-    gdMaxValue = 16;
-    nStep = (double)(sc.proph.maxSize-sc.proph.minSize)/sc.proph.nCount;
+    gdMaxValue = 0;
+    nStep = (double)(sc.proph.maxSize-sc.proph.minSize)/gdFilled;
 
     for(int i = 0; i < THREADSC; ++i) {
         ResizeInputArray(&(tInput[i].arr),sc.proph.maxSize);
@@ -98,31 +107,27 @@ void StartSortingThreads(){
 
     }
 }
-struct timespec start = {0};
+
 #define DOTRADIUS 4
 #define LINETHICKNESS 2
 void DrawGraph(Rectangle bounds){
-    pthread_mutex_lock(&mutex);
-    if(graphData && graphData[(gdSize-1)]) {
-        if(start.tv_sec){
+   pthread_mutex_lock(&mutex);
+        /*if(gdFilled && graphData[gdFilled-1]&&start.tv_sec){
             struct timespec end;
-            clock_gettime(CLOCK_MONOTONIC,&end);
-            printf("%d: %f\n",sc.proph.nCount,(float)((float)(end.tv_sec-start.tv_sec)+(end.tv_nsec-start.tv_nsec)*1e-9));
+            clock_gettime(TIMTEST,&end);
+            printf("%d: %f\n",sc.proph.nCount,);
             fflush(stdout);
             start.tv_sec = 0;
-        }
-        DrawRectangleRec(bounds, RED);
-    }
-    pthread_mutex_unlock(&mutex);
-    return;
+        }*/
+
     if(!graphData) {
         pthread_mutex_unlock(&mutex);
         return;
     }
     Vector2 prevDot = {0};
-    float stepX = bounds.width/(sc.proph.nCount-1);
+    float stepX = bounds.width/(gdFilled-1);
     float stepY = bounds.height/gdMaxValue;
-    for(int i = 0; i < sc.proph.nCount; ++i){
+    for(int i = 0; i < gdFilled; ++i){
         Vector2 dot = {i*stepX+bounds.x,bounds.height-graphData[i]*stepY+bounds.y};
         if(sc.graph.showDots)
             DrawCircleV(dot,DOTRADIUS,sc.graph.col1);
@@ -141,7 +146,7 @@ void UpdateDrawProphiler(Rectangle bounds){
     bounds.height -= 2 * PROPHPADDING;
     DrawRectangleRec(bounds,BLACK);
     if(sc.resetBtn){
-        clock_gettime(CLOCK_MONOTONIC,&start);
+        //clock_gettime(TIMTEST,&start);
         StartSortingThreads();
         sc.resetBtn = false;
     }
