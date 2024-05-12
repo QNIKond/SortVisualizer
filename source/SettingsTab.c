@@ -42,7 +42,7 @@ void UpdateDrawCheckBox(Rectangle *bounds, const char *text, bool *data){
 int UpdateDrawSlider(Rectangle *bounds, const char *text, int *data, const int min, const int max, int id){
     float value = (float)*data;
     Rectangle sliderRect = {bounds->x,bounds->y+VPADDING,bounds->width-PADDING-TEXTBOXWIDTH,LINEHEIGHT-VPADDING*2};
-    if(max>50000)
+    if(max>5000)
         sliderRect.width-=TEXTBOXWIDTH;
     DrawLine(sliderRect.x,sliderRect.y+sliderRect.height/2,
              sliderRect.x+sliderRect.width,sliderRect.y+sliderRect.height/2,BLACK);
@@ -51,7 +51,7 @@ int UpdateDrawSlider(Rectangle *bounds, const char *text, int *data, const int m
 
     Rectangle tbRect = {bounds->x + bounds->width-TEXTBOXWIDTH,bounds->y+VPADDING
             ,TEXTBOXWIDTH,LINEHEIGHT-VPADDING*2};
-    if(max>50000){
+    if(max>5000){
         tbRect.x -= TEXTBOXWIDTH;
         tbRect.width += TEXTBOXWIDTH;
     }
@@ -128,7 +128,7 @@ void DrawStartResetButtons(SConfig *sconf, Rectangle *bounds){
     if(sconf->array.updated)
         GuiSetStyle(BUTTON,BASE_COLOR_NORMAL, ALARMCOLOR);
     sconf->resetBtn =  GuiButton((Rectangle){PADDING/2 + bounds->width/2+bounds->x,GetScreenHeight()-PADDING-BIGBUTTONHEIGHT,
-                          (bounds->width-PADDING)/2, BIGBUTTONHEIGHT},"RESET");
+                                             (bounds->width-PADDING)/2, BIGBUTTONHEIGHT},"RESET");
     GuiSetStyle(BUTTON,BASE_COLOR_NORMAL, defaultColor);
 }
 
@@ -152,7 +152,7 @@ void UpdateDrawVisTab(SConfig *sconf, Rectangle bounds){
     //UpdateDrawSubButton(&bounds,0,"", ColorToInt(sconf->vs.col2));
     //UpdateDrawSubButton(&bounds,1,"",ColorToInt(sconf->vs.col1));
     //UpdateDrawDropdown(&bounds,"Coloring","Plain;Gradient;Rainbow",&sconf->vs.coloring,2,&tbstates[1]);
-    //UpdateDrawCheckBox(&bounds,"Mirrored",&sconf->vs.mirrored);
+//UpdateDrawCheckBox(&bounds,"Mirrored",&sconf->vs.mirrored);
     //UpdateDrawCheckBox(&bounds,"Connected dots",&sconf->vs.connectedDots);
     //UpdateDrawCheckBox(&bounds,"Hollow",&sconf->vs.hollow);
     //UpdateDrawCheckBox(&bounds,"Show value array length",&sconf->vs.showValueAsLength);
@@ -171,7 +171,7 @@ void UpdateDrawProphTab(SConfig *sconf, Rectangle bounds){
     bounds.height = LINEHEIGHT;
     bounds.y += LINEHEIGHT*PROPHLINESCOUNT;
     DrawProphButton(sconf,&bounds);
-    sconf->array.updated |= UpdateDrawSlider(&bounds, "Measurements count:", &sconf->proph.nCount, 5, 100, id++);
+    sconf->array.updated |= UpdateDrawSlider(&bounds, "Measurements count:", &sconf->proph.nCount, 5, 10000, id++);
     sconf->array.updated |= UpdateDrawSlider(&bounds, "Max array size:", &sconf->proph.maxSize, 5, 4000000, id++);
     sconf->array.updated |= UpdateDrawSlider(&bounds, "Min array size:", &sconf->proph.minSize, 5, 4000000, id++);
     sconf->array.updated |= UpdateDrawDropdown(&bounds, "Sorting algorithm","Insertion sort; Shell sort; Bubble sort; Shaker sort", &sconf->proph.sortingAlgorithm, 0, id++);

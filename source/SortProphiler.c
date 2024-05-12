@@ -5,8 +5,9 @@
 #include "pthread.h"
 #include "semaphore.h"
 #include "time.h"
+#include "stdio.h"
 
-#define THREADSC 24
+#define THREADSC 12
 
 bool atStart = true;
 
@@ -82,7 +83,7 @@ void StartSortingThreads(){
         gdSize = sc.proph.nCount;
         graphData = realloc(graphData,gdSize*sizeof(int));
     }
-    for(int i = 0; i < gdSize; ++i)
+    for(int i = 0; i < sc.proph.nCount; ++i)
         graphData[i] = 0;
     gdMaxValue = 16;
     nStep = (double)(sc.proph.maxSize-sc.proph.minSize)/sc.proph.nCount;
@@ -97,11 +98,23 @@ void StartSortingThreads(){
 
     }
 }
-
+struct timespec start = {0};
 #define DOTRADIUS 4
 #define LINETHICKNESS 2
 void DrawGraph(Rectangle bounds){
     pthread_mutex_lock(&mutex);
+    if(graphData && graphData[(gdSize-1)]) {
+        if(start.tv_sec){
+            struct timespec end;
+            clock_gettime(CLOCK_MONOTONIC,&end);
+            printf("%d: %f\n",sc.proph.nCount,(float)((float)(end.tv_sec-start.tv_sec)+(end.tv_nsec-start.tv_nsec)*1e-9));
+            fflush(stdout);
+            start.tv_sec = 0;
+        }
+        DrawRectangleRec(bounds, RED);
+    }
+    pthread_mutex_unlock(&mutex);
+    return;
     if(!graphData) {
         pthread_mutex_unlock(&mutex);
         return;
@@ -128,6 +141,7 @@ void UpdateDrawProphiler(Rectangle bounds){
     bounds.height -= 2 * PROPHPADDING;
     DrawRectangleRec(bounds,BLACK);
     if(sc.resetBtn){
+        clock_gettime(CLOCK_MONOTONIC,&start);
         StartSortingThreads();
         sc.resetBtn = false;
     }
