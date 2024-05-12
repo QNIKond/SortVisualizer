@@ -1,5 +1,17 @@
 #include "ArraySorter.h"
 
+void FullBubbleSort(InputArray *input){
+    for (int i = 0; i < input->filled - 1; i++) {
+        for (int j = (input->filled - 1); j > i; j--){
+            if (input->arr[j - 1] > input->arr[j]){
+                int t = input->arr[j - 1];
+                input->arr[j - 1] = input->arr[j];
+                input->arr[j] = t;
+            }
+        }
+    }
+}
+
 int StepBubbleSort(InputArray *input, SortData *data){
     if(data->i + 1 >= input->filled) {
         if(data->isSorted)

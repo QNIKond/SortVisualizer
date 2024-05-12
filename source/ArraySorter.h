@@ -16,4 +16,6 @@ void ResetSorter(SortData *data, int arraySize);
 
 int EstimateSorter(SConfig *sconf, InputArray *input, InputArray *sorted);
 
+void FullBubbleSort(InputArray *input);
+
 void FullShakerSort(InputArray *input);
