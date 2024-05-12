@@ -105,6 +105,18 @@ void FullInsertionSort(InputArray *input){
     }
 }
 
+void FullShellSort(InputArray *input) {
+    for (int s = input->filled / 2; s > 0; s /= 2) {
+        for (int i = s; i < input->filled; ++i) {
+            for (int j = i - s; j >= 0 && input->arr[j] > input->arr[j + s]; j -= s) {
+                int t = input->arr[j];
+                input->arr[j] = input->arr[j + s];
+                input->arr[j + s] = t;
+            }
+        }
+    }
+}
+
 int StepSortArray(SConfig *sconf, InputArray *input, SortData *data){
     switch (sconf->array.sortingAlgorithm) {
         case InsertionSort:

@@ -21,3 +21,5 @@ void FullBubbleSort(InputArray *input);
 void FullShakerSort(InputArray *input);
 
 void FullInsertionSort(InputArray *input);
+
+void FullShellSort(InputArray *input);
