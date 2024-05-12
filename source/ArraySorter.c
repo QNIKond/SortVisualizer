@@ -93,6 +93,18 @@ int StepShakerSort(InputArray *input, SortData *data){
     return 0;
 }
 
+void FullInsertionSort(InputArray *input){
+    for (int i = 0; i < input->filled; i++){
+        int j = i - 1;
+        int t = input->arr[i];
+        while ((input->arr[j] > t) && (j >= 0)) {
+            input->arr[j + 1] = input->arr[j];
+            j--;
+        }
+        input->arr[j + 1] = t;
+    }
+}
+
 int StepSortArray(SConfig *sconf, InputArray *input, SortData *data){
     switch (sconf->array.sortingAlgorithm) {
         case InsertionSort:
