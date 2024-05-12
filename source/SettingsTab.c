@@ -7,7 +7,7 @@
 #define BIGBUTTONHEIGHT (LINEHEIGHT*1.5)
 #define VPADDING 3
 #define VISLINESCOUNT 7//21
-#define PROPHLINESCOUNT 5//21
+#define PROPHLINESCOUNT 7//21
 #define TEXTBOXWIDTH 40
 #define PADDING 10
 #define ALARMCOLOR 0xDD1111FF
@@ -132,6 +132,12 @@ void DrawStartResetButtons(SConfig *sconf, Rectangle *bounds){
     GuiSetStyle(BUTTON,BASE_COLOR_NORMAL, defaultColor);
 }
 
+void DrawProphButton(SConfig *sconf, Rectangle *bounds){
+    GuiSetStyle(DEFAULT,TEXT_ALIGNMENT,TEXT_ALIGN_MIDDLE);
+    sconf->resetBtn =  GuiButton((Rectangle) {bounds->x, GetScreenHeight() - PADDING - BIGBUTTONHEIGHT,
+                                              (bounds->width), BIGBUTTONHEIGHT},"RESET");
+}
+
 void UpdateDrawVisTab(SConfig *sconf, Rectangle bounds){
     int id = SNOTACTIVE+1;
     bounds.height = LINEHEIGHT;
@@ -164,7 +170,8 @@ void UpdateDrawProphTab(SConfig *sconf, Rectangle bounds){
     int id = SNOTACTIVE+1;
     bounds.height = LINEHEIGHT;
     bounds.y += LINEHEIGHT*PROPHLINESCOUNT;
-    DrawStartResetButtons(sconf,&bounds);
+    DrawProphButton(sconf,&bounds);
+    sconf->array.updated |= UpdateDrawSlider(&bounds, "Measurements count:", &sconf->proph.nCount, 5, 100, id++);
     sconf->array.updated |= UpdateDrawSlider(&bounds, "Max array size:", &sconf->proph.maxSize, 5, 4000000, id++);
     sconf->array.updated |= UpdateDrawSlider(&bounds, "Min array size:", &sconf->proph.minSize, 5, 4000000, id++);
     sconf->array.updated |= UpdateDrawDropdown(&bounds, "Sorting algorithm","Insertion sort; Shell sort; Bubble sort; Shaker sort", &sconf->proph.sortingAlgorithm, 0, id++);

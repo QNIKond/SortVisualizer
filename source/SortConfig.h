@@ -56,6 +56,7 @@ typedef struct{
         ShufflingAlgorithm shufflingAlgorithm;
         int minSize;
         int maxSize;
+        int nCount;
 
         bool updated;
     } proph;

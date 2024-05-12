@@ -11,6 +11,9 @@ void InitSortConfig(SConfig *sconfig){
     sconfig->visual.showProgressBars = true;
     sconfig->array.sortingAlgorithm = BubbleSort;
     sconfig->proph.sortingAlgorithm = BubbleSort;
+    sconfig->proph.minSize = 100;
+    sconfig->proph.maxSize = 100000;
+    sconfig->proph.nCount = 20;
     sconfig->graph.showDots = true;
     sconfig->graph.col1 = RED;
 }

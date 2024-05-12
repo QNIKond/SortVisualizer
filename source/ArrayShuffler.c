@@ -5,6 +5,15 @@ struct SUShared{
     int i;
 } suShared;
 
+int ShuffleArray(SConfig *sconf, InputArray *input){
+    for(int i = 0; i < input->filled-1; ++i){
+        int t = input->arr[i];
+        int r = rand()%(input->filled-i-1)+i+1;
+        input->arr[i] = input->arr[r];
+        input->arr[r] = t;
+    }
+}
+
 int StepShuffleRandom(SConfig *sconf, InputArray *input){
     if(suShared.i >= input->filled-1)
         return 1;
