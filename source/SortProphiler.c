@@ -12,10 +12,9 @@
 
 #define THREADSC 12
 
-bool atStart = true;
-#define TIMTEST CLOCK_PROCESS_CPUTIME_ID
+
+int activeThreads = 0;
 SConfig sc;
-InputArray arr1;
 int *graphData = 0;
 int gdSize = 0;
 int gdFilled = 0;
@@ -41,6 +40,7 @@ void InitProphiler(){
     pthread_rwlock_init(&tiLock,NULL);
     for(int i = 0; i < THREADSC; ++i)
         InitInputArray(&tInput[i].arr,1);
+    sc.proph.atStart = true;
 }
 
 int Bubble(InputArray *arr){
@@ -80,7 +80,7 @@ void *SortT(void *inref){
     return NULL;
 }
 
-void StartSortingThreads(){
+void StopThreads(){
     pthread_rwlock_wrlock(&tiLock);
     for(int i = 0; i < THREADSC; ++i) {
         tInput[i].exit = 1;
@@ -89,6 +89,10 @@ void StartSortingThreads(){
     for(int i = 0; i < THREADSC; ++i){
         pthread_join(threads[i],NULL);
     }
+}
+
+void StartSortingThreads(){
+    StopThreads();
     gdFilled = sc.proph.nCount;
     if(gdSize<gdFilled){
         gdSize = gdFilled;
@@ -191,8 +195,11 @@ void UpdateDrawProphiler(Rectangle bounds){
     bounds.height -= 2 * PROPHPADDING;
 
     if(sc.resetBtn){
-        //clock_gettime(TIMTEST,&start);
-        StartSortingThreads();
+        if(sc.proph.atStart)
+            StartSortingThreads();
+        else
+            StopThreads();
+        sc.proph.atStart = !sc.proph.atStart;
         sc.resetBtn = false;
     }
     if(gdSize)
@@ -200,7 +207,9 @@ void UpdateDrawProphiler(Rectangle bounds){
 }
 
 void SyncConfigsForProph(SConfig *input){
-    if(atStart){
+    input->proph.atStart = sc.proph.atStart;
+    if(sc.proph.atStart){
+        input->proph.updated = false;
         sc.proph = input->proph;
     }
     sc.graph = input->graph;

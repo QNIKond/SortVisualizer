@@ -58,6 +58,7 @@ typedef struct{
         int maxSize;
         int nCount;
 
+        bool atStart;
         bool updated;
     } proph;
 

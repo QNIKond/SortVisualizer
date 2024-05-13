@@ -134,8 +134,16 @@ void DrawStartResetButtons(SConfig *sconf, Rectangle *bounds){
 
 void DrawProphButton(SConfig *sconf, Rectangle *bounds){
     GuiSetStyle(DEFAULT,TEXT_ALIGNMENT,TEXT_ALIGN_MIDDLE);
-    sconf->resetBtn =  GuiButton((Rectangle) {bounds->x, GetScreenHeight() - PADDING - BIGBUTTONHEIGHT,
-                                              (bounds->width), BIGBUTTONHEIGHT},"RESET");
+    int defaultColor = GuiGetStyle(BUTTON,BASE_COLOR_NORMAL);
+    if(sconf->proph.updated && !sconf->proph.atStart)
+        GuiSetStyle(BUTTON,BASE_COLOR_NORMAL, ALARMCOLOR);
+    if(sconf->proph.atStart)
+        sconf->resetBtn =  GuiButton((Rectangle) {bounds->x, GetScreenHeight() - PADDING - BIGBUTTONHEIGHT,
+                                              (bounds->width), BIGBUTTONHEIGHT},"RUN");
+    else
+        sconf->resetBtn =  GuiButton((Rectangle) {bounds->x, GetScreenHeight() - PADDING - BIGBUTTONHEIGHT,
+                                                  (bounds->width), BIGBUTTONHEIGHT},"RESET");
+    GuiSetStyle(BUTTON,BASE_COLOR_NORMAL, defaultColor);
 }
 
 void UpdateDrawVisTab(SConfig *sconf, Rectangle bounds){
@@ -173,10 +181,10 @@ void UpdateDrawProphTab(SConfig *sconf, Rectangle bounds){
     bounds.y += LINEHEIGHT*PROPHLINESCOUNT;
     DrawProphButton(sconf,&bounds);
     UpdateDrawCheckBox(&bounds,"Static Y axis",&sconf->graph.staticY);
-    sconf->array.updated |= UpdateDrawSlider(&bounds, "Measurements count:", &sconf->proph.nCount, 5, 10000, id++);
-    sconf->array.updated |= UpdateDrawSlider(&bounds, "Max array size:", &sconf->proph.maxSize, 5, 4000000, id++);
-    sconf->array.updated |= UpdateDrawSlider(&bounds, "Min array size:", &sconf->proph.minSize, 5, 4000000, id++);
-    sconf->array.updated |= UpdateDrawDropdown(&bounds, "Sorting algorithm","Insertion sort; Shell sort; Bubble sort; Shaker sort", &sconf->proph.sortingAlgorithm, 0, id++);
+    sconf->proph.updated |= UpdateDrawSlider(&bounds, "Measurements count:", &sconf->proph.nCount, 5, 10000, id++);
+    sconf->proph.updated |= UpdateDrawSlider(&bounds, "Max array size:", &sconf->proph.maxSize, 5, 4000000, id++);
+    sconf->proph.updated |= UpdateDrawSlider(&bounds, "Min array size:", &sconf->proph.minSize, 5, 4000000, id++);
+    sconf->proph.updated |= UpdateDrawDropdown(&bounds, "Sorting algorithm","Insertion sort; Shell sort; Bubble sort; Shaker sort", &sconf->proph.sortingAlgorithm, 0, id++);
 }
 
 void UpdateDrawSettingTab(SConfig *sconf, Rectangle bounds){
