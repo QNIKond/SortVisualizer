@@ -31,15 +31,17 @@ void DrawBars(Rectangle bounds){
     if(arr.filled<length){
         double width =  length/arr.filled;
         for(int i = 0; i < arr.filled; ++i){
+            Color col = ColorFromHSV(360*arr.arr[i]/arr.filled,1,1);
             DrawRectangle((int)(bounds.x+SVBARSHOFFSET+width*i), bounds.y+bounds.height-SVBARSVOFFSET-height*(arr.arr[i] + 1),
-                          (int)width+1, height*(arr.arr[i] + 1), sconf.visual.col1);
+                          (int)width+1, height*(arr.arr[i] + 1), col);
         }
     }
     else{
         double iSkip =  arr.filled/length;
         for(int i = 0; i < length; ++i){
+            Color col = ColorFromHSV(360*arr.arr[i]/arr.filled,1,1);
             DrawLine((int)(bounds.x+SVBARSHOFFSET+i), bounds.y+bounds.height-SVBARSVOFFSET-height*(arr.arr[(int)(i*iSkip)] + 1),
-                     (int)(bounds.x+SVBARSHOFFSET+i), bounds.y+bounds.height-SVBARSVOFFSET, sconf.visual.col1);
+                     (int)(bounds.x+SVBARSHOFFSET+i), bounds.y+bounds.height-SVBARSVOFFSET, col);
         }
     }
 }

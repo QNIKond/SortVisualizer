@@ -57,6 +57,8 @@ typedef struct{
         int minSize;
         int maxSize;
         int nCount;
+        int threads;
+#define MAXTHREADS 32
 
         bool atStart;
         bool updated;

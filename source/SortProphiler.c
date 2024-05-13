@@ -10,10 +10,11 @@
 #include "math.h"
 #include "../external/raygui.h"
 
-#define THREADSC 12
+//#define THREADSC 6
 
 
 int activeThreads = 0;
+int createdThreads = 0;
 
 SConfig sc;
 int *graphData = 0;
@@ -32,25 +33,43 @@ typedef struct{
 }ThreadInput;
 pthread_rwlock_t tiLock;
 
-pthread_t threads[THREADSC];
-ThreadInput tInput[THREADSC];
+pthread_t threads[MAXTHREADS];
+ThreadInput tInput[MAXTHREADS];
 
 void InitProphiler(){
 
     pthread_mutex_init(&mutex,NULL);
     pthread_rwlock_init(&tiLock,NULL);
-    for(int i = 0; i < THREADSC; ++i)
+    for(int i = 0; i < MAXTHREADS; ++i)
         InitInputArray(&tInput[i].arr,1);
     sc.proph.atStart = true;
 }
 
 int Bubble(InputArray *arr){
 
-    double res = ((double)arr->filled*(double)arr->filled)/(10000);
-    usleep((int)res);
+   /* double res = ((double)arr->filled*(double)arr->filled)/(10000);
+    usleep((int)res);*/
+
+    bool sorted = false;
+    //int ee = 1000 < arr->filled-1 ? 1000 : arr->filled-1;
+    while(!sorted){
+        sorted = true;
+        for(int i = 0; i < arr->filled-1; ++i)
+            if(arr->arr[i] > arr->arr[i+1]){
+                int t = arr->arr[i];
+                arr->arr[i] = arr->arr[i+1];
+                arr->arr[i+1] = t;
+                sorted = false;
+            }
+    }
     return 0;
     //return (t%213)*473 %16;
 }
+
+int cmp(const void *a, const void *b){
+    return*(int*)a-*(int*)b;
+}
+
 void *SortT(void *inref){
     ThreadInput *in = (ThreadInput*)inref;
     srand(in->seed);
@@ -68,6 +87,7 @@ void *SortT(void *inref){
         struct timespec start;
         struct timespec end;
         clock_gettime(CLOCK_MONOTONIC,&start);
+        //qsort(in->arr.arr,in->arr.filled,sizeof(int),cmp);
         Bubble(&in->arr);
         clock_gettime(CLOCK_MONOTONIC,&end);
         int time = (int)(end.tv_sec-start.tv_sec)*1000+(int)((end.tv_nsec-start.tv_nsec)*1e-6);
@@ -82,14 +102,14 @@ void *SortT(void *inref){
 }
 
 void TryStopThreads(){
-    if(activeThreads == THREADSC) {
+    if(activeThreads == createdThreads) {
         pthread_rwlock_wrlock(&tiLock);
-        for (int i = 0; i < THREADSC; ++i) {
+        for (int i = 0; i < createdThreads; ++i) {
             tInput[i].exit = 1;
         }
         pthread_rwlock_unlock(&tiLock);
     }
-    for(int i = 0; i < THREADSC; ++i){
+    for(int i = 0; i < createdThreads; ++i){
         if(!_pthread_tryjoin(threads[i],NULL))
             --activeThreads;
     }
@@ -106,15 +126,16 @@ void StartSortingThreads(){
     gdMaxValue = 0;
     nStep = (double)(sc.proph.maxSize-sc.proph.minSize)/gdFilled;
 
-    for(int i = 0; i < THREADSC; ++i) {
+    createdThreads = sc.proph.threads;
+    for(int i = 0; i < createdThreads; ++i) {
         ResizeInputArray(&(tInput[i].arr),sc.proph.maxSize);
-        tInput[i].step = THREADSC;
+        tInput[i].step = createdThreads;
         tInput[i].offset = i;
         tInput[i].exit = 0;
         tInput[i].seed = rand();
         pthread_create(&threads[i],NULL,SortT,(void*)&tInput[i]);
     }
-    activeThreads = THREADSC;
+    activeThreads = createdThreads;
 }
 
 #define DOTRADIUS 4
@@ -227,6 +248,6 @@ void FreeProphiler(){
         free(graphData);
     pthread_mutex_destroy(&mutex);
     pthread_rwlock_destroy(&tiLock);
-    for(int i = 0; i < THREADSC; ++i)
+    for(int i = 0; i < MAXTHREADS; ++i)
         FreeInputArray(&tInput[i].arr);
 }

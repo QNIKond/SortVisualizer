@@ -7,7 +7,7 @@
 #define BIGBUTTONHEIGHT (LINEHEIGHT*1.5)
 #define VPADDING 3
 #define VISLINESCOUNT 7//21
-#define PROPHLINESCOUNT 8//21
+#define PROPHLINESCOUNT 10//21
 #define TEXTBOXWIDTH 40
 #define PADDING 10
 #define ALARMCOLOR 0xDD1111FF
@@ -170,9 +170,9 @@ void UpdateDrawVisTab(SConfig *sconf, Rectangle bounds){
 
     //sconf->array.updated |= UpdateDrawDropdown(&bounds,"Shuffling algorithm","Random;Slight",&sconf->array.shufflingAlgorithm,0,&tbstates[3]);
 
-    sconf->array.updated |= UpdateDrawSlider(&bounds, "Array size:", &sconf->array.size, 5, 4000, id++);
-    UpdateDrawSubButton(&bounds,0,"?", GuiGetStyle(BUTTON,BASE_COLOR_NORMAL));
-    sconf->array.updated |= UpdateDrawDropdown(&bounds, "Sorting algorithm","Insertion sort; Shell sort; Bubble sort; Shaker sort", &sconf->array.sortingAlgorithm, 1, id++);
+    sconf->array.updated |= UpdateDrawSlider(&bounds, "Array size:", &sconf->array.size, 5, 1600, id++);
+    //UpdateDrawSubButton(&bounds,0,"?", GuiGetStyle(BUTTON,BASE_COLOR_NORMAL));
+    sconf->array.updated |= UpdateDrawDropdown(&bounds, "Sorting algorithm","Insertion sort; Shell sort; Bubble sort; Shaker sort", &sconf->array.sortingAlgorithm, 0, id++);
 }
 
 void UpdateDrawProphTab(SConfig *sconf, Rectangle bounds){
@@ -181,9 +181,12 @@ void UpdateDrawProphTab(SConfig *sconf, Rectangle bounds){
     bounds.y += LINEHEIGHT*PROPHLINESCOUNT;
     DrawProphButton(sconf,&bounds);
     UpdateDrawCheckBox(&bounds,"Static Y axis",&sconf->graph.staticY);
-    sconf->proph.updated |= UpdateDrawSlider(&bounds, "Measurements count:", &sconf->proph.nCount, 5, 10000, id++);
-    sconf->proph.updated |= UpdateDrawSlider(&bounds, "Max array size:", &sconf->proph.maxSize, 5, 4000000, id++);
+    sconf->proph.updated |= UpdateDrawSlider(&bounds, "Threads count:", &sconf->proph.threads, 1, 24, id++);
+    sconf->proph.updated |= UpdateDrawSlider(&bounds, "Measurements count:", &sconf->proph.nCount, 5, 1000, id++);
+    sconf->proph.updated |= UpdateDrawSlider(&bounds, "Max array size:", &sconf->proph.maxSize, 5, 400000000, id++);
     sconf->proph.updated |= UpdateDrawSlider(&bounds, "Min array size:", &sconf->proph.minSize, 5, 4000000, id++);
+    if(sconf->proph.maxSize - sconf->proph.minSize<sconf->proph.nCount)
+        sconf->proph.minSize = sconf->proph.maxSize - sconf->proph.nCount;
     sconf->proph.updated |= UpdateDrawDropdown(&bounds, "Sorting algorithm","Insertion sort; Shell sort; Bubble sort; Shaker sort", &sconf->proph.sortingAlgorithm, 0, id++);
 }
 

@@ -13,7 +13,8 @@ void InitSortConfig(SConfig *sconfig){
     sconfig->proph.sortingAlgorithm = BubbleSort;
     sconfig->proph.minSize = 100;
     sconfig->proph.maxSize = 100000;
-    sconfig->proph.nCount = 20;
+    sconfig->proph.nCount = 100;
+    sconfig->proph.threads = 6;
     sconfig->graph.staticY = false;
     sconfig->graph.col1 = BLUE;
 }
