@@ -1,9 +1,9 @@
 #include "ArraySorter.h"
 
-void FullBubbleSort(InputArray *input){
+void FullBubbleSort(InputArray *input) {
     for (int i = 0; i < input->filled - 1; i++) {
-        for (int j = (input->filled - 1); j > i; j--){
-            if (input->arr[j - 1] > input->arr[j]){
+        for (int j = (input->filled - 1); j > i; j--) {
+            if (input->arr[j - 1] > input->arr[j]) {
                 int t = input->arr[j - 1];
                 input->arr[j - 1] = input->arr[j];
                 input->arr[j] = t;
@@ -12,14 +12,14 @@ void FullBubbleSort(InputArray *input){
     }
 }
 
-int StepBubbleSort(InputArray *input, SortData *data){
-    if(data->i + 1 >= input->filled) {
-        if(data->isSorted)
+int StepBubbleSort(InputArray *input, SortData *data) {
+    if (data->i + 1 >= input->filled) {
+        if (data->isSorted)
             return 1;
         data->isSorted = true;
         data->i = 0;
     }
-    if(input->arr[data->i] > input->arr[data->i + 1]) {
+    if (input->arr[data->i] > input->arr[data->i + 1]) {
         int t = input->arr[data->i];
         input->arr[data->i] = input->arr[data->i + 1];
         input->arr[data->i + 1] = t;
@@ -29,7 +29,7 @@ int StepBubbleSort(InputArray *input, SortData *data){
     return 0;
 }
 
-void FullShakerSort(InputArray *input){
+void FullShakerSort(InputArray *input) {
     int leftBoundary = 0;
     int rightBoundary = input->filled - 1;
     bool wasReplacement = true;
@@ -59,17 +59,18 @@ void FullShakerSort(InputArray *input){
     }
 }
 
-int StepShakerSort(InputArray *input, SortData *data){
-    if(data->isSorted){
+int StepShakerSort(InputArray *input, SortData *data) {
+    if (data->isSorted) {
         data->isSorted = false;
     }
-    if(data->leftBoundary >= data->rightBoundary || data->unreplacementCounter >= data->rightBoundary - data->leftBoundary) {
-       data->isSorted = true;
-       data->i = 0;
-       return 1;
+    if (data->leftBoundary >= data->rightBoundary ||
+        data->unreplacementCounter >= data->rightBoundary - data->leftBoundary) {
+        data->isSorted = true;
+        data->i = 0;
+        return 1;
     }
-    if(data->i <= data->rightBoundary - 1 && data->i >= data->leftBoundary) {
-        if(input->arr[data->i] > input->arr[data->i + 1]) {
+    if (data->i <= data->rightBoundary - 1 && data->i >= data->leftBoundary) {
+        if (input->arr[data->i] > input->arr[data->i + 1]) {
             int t = input->arr[data->i];
             input->arr[data->i] = input->arr[data->i + 1];
             input->arr[data->i + 1] = t;
@@ -81,11 +82,11 @@ int StepShakerSort(InputArray *input, SortData *data){
         data->direction *= -1;
         data->unreplacementCounter = 0;
     }
-    if(data->i > data->rightBoundary) {
+    if (data->i > data->rightBoundary) {
         --data->rightBoundary;
         --data->i;
     }
-    if(data->i < data->leftBoundary) {
+    if (data->i < data->leftBoundary) {
         ++data->leftBoundary;
         ++data->i;
     }
@@ -93,8 +94,8 @@ int StepShakerSort(InputArray *input, SortData *data){
     return 0;
 }
 
-void FullInsertionSort(InputArray *input){
-    for (int i = 0; i < input->filled; i++){
+void FullInsertionSort(InputArray *input) {
+    for (int i = 1; i < input->filled; i++) {
         int j = i - 1;
         int t = input->arr[i];
         while ((input->arr[j] > t) && (j >= 0)) {
@@ -103,6 +104,36 @@ void FullInsertionSort(InputArray *input){
         }
         input->arr[j + 1] = t;
     }
+}
+
+int StepInsertionSort(InputArray *input, SortData *data) {
+    //data->direction - temp element
+    //data->leftBoundary - j counter
+    if (data->isSorted) {
+        data->isSorted = false;
+        data->i = 1;
+        data->leftBoundary = -2;
+    }
+
+    if (data->i >= input->filled) {
+        return 1;
+    }
+
+    if (data->leftBoundary == -2) {
+        data->leftBoundary = data->i - 1;
+        data->direction = input->arr[data->i];
+    }
+
+    if ((input->arr[data->leftBoundary] > data->direction) && (data->leftBoundary >= 0)) {
+        input->arr[data->leftBoundary + 1] = input->arr[data->leftBoundary];
+        data->leftBoundary--;
+    } else {
+        data->i++;
+        input->arr[data->leftBoundary + 1] = data->direction;
+        data->leftBoundary = -2;
+    }
+
+    return 0;
 }
 
 void FullShellSort(InputArray *input) {
@@ -117,10 +148,10 @@ void FullShellSort(InputArray *input) {
     }
 }
 
-int StepSortArray(SConfig *sconf, InputArray *input, SortData *data){
+int StepSortArray(SConfig *sconf, InputArray *input, SortData *data) {
     switch (sconf->array.sortingAlgorithm) {
         case InsertionSort:
-            break;
+            return StepInsertionSort(input, data);
         case ShellSort:
             break;
         case BubbleSort:
@@ -132,22 +163,22 @@ int StepSortArray(SConfig *sconf, InputArray *input, SortData *data){
 }
 
 
-void ResetSorter(SortData *data, int arraySize){
-    *data = (SortData){.i = 0, .leftBoundary = 0, .rightBoundary = arraySize - 1};
+void ResetSorter(SortData *data, int arraySize) {
+    *data = (SortData) {.i = 0, .leftBoundary = 0, .rightBoundary = arraySize - 1};
     data->isSorted = true;
     data->direction = 1;
     data->unreplacementCounter = 0;
 }
 
-int EstimateSorter(SConfig *sconf, InputArray *input, InputArray *sorted){
+int EstimateSorter(SConfig *sconf, InputArray *input, InputArray *sorted) {
     SortData data;
     ResetSorter(&data, input->filled);
     ResizeInputArray(sorted, input->filled);
-    for(int i = 0; i < input->filled; ++i){
+    for (int i = 0; i < input->filled; ++i) {
         sorted->arr[i] = input->arr[i];
     }
     int counter = 0;
-    while(!StepSortArray(sconf,sorted, &data))
+    while (!StepSortArray(sconf, sorted, &data))
         ++counter;
     return ++counter;
 }
