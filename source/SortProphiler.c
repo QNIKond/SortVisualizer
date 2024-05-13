@@ -14,6 +14,7 @@
 
 
 int activeThreads = 0;
+
 SConfig sc;
 int *graphData = 0;
 int gdSize = 0;
@@ -80,19 +81,21 @@ void *SortT(void *inref){
     return NULL;
 }
 
-void StopThreads(){
-    pthread_rwlock_wrlock(&tiLock);
-    for(int i = 0; i < THREADSC; ++i) {
-        tInput[i].exit = 1;
+void TryStopThreads(){
+    if(activeThreads == THREADSC) {
+        pthread_rwlock_wrlock(&tiLock);
+        for (int i = 0; i < THREADSC; ++i) {
+            tInput[i].exit = 1;
+        }
+        pthread_rwlock_unlock(&tiLock);
     }
-    pthread_rwlock_unlock(&tiLock);
     for(int i = 0; i < THREADSC; ++i){
-        pthread_join(threads[i],NULL);
+        if(!_pthread_tryjoin(threads[i],NULL))
+            --activeThreads;
     }
 }
 
 void StartSortingThreads(){
-    StopThreads();
     gdFilled = sc.proph.nCount;
     if(gdSize<gdFilled){
         gdSize = gdFilled;
@@ -110,8 +113,8 @@ void StartSortingThreads(){
         tInput[i].exit = 0;
         tInput[i].seed = rand();
         pthread_create(&threads[i],NULL,SortT,(void*)&tInput[i]);
-
     }
+    activeThreads = THREADSC;
 }
 
 #define DOTRADIUS 4
@@ -193,15 +196,17 @@ void UpdateDrawProphiler(Rectangle bounds){
     bounds.y += PROPHPADDING;
     bounds.width -= 2 * PROPHPADDING;
     bounds.height -= 2 * PROPHPADDING;
-
     if(sc.resetBtn){
-        if(sc.proph.atStart)
+        if(sc.proph.atStart && !activeThreads) {
             StartSortingThreads();
+            sc.proph.atStart = false;
+        }
         else
-            StopThreads();
-        sc.proph.atStart = !sc.proph.atStart;
+            sc.proph.atStart = true;
         sc.resetBtn = false;
     }
+    if(sc.proph.atStart && activeThreads)
+        TryStopThreads();
     if(gdSize)
         DrawGraph(bounds);
 }
