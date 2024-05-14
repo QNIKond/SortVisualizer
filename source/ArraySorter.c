@@ -151,8 +151,42 @@ void ShellSort(InputArray *input) {
     }
 }
 
-int StepShellSort(InputArray *input, SortData *data){
+int SteShellSort(InputArray *input, SortData *data) {
+    for (int s = input->filled / 2; s > 0; s /= 2) {
+        for (int i = s; i < input->filled; ++i) {
+            for (int j = i - s; j >= 0 && input->arr[j] > input->arr[j + s]; j -= s) {
+                int t = input->arr[j];
+                input->arr[j] = input->arr[j + s];
+                input->arr[j + s] = t;
+            }
+        }
+    }
     return 1;
+}
+
+int StepShellSort(InputArray *input, SortData *data){
+    if(data->shellSorted)
+        return 1;
+
+    if((data->stepJ < 0) || (input->arr[data->stepJ] <= input->arr[data->stepJ + data->stepS])){
+        ++data->stepI;
+        if(data->stepI >= input->filled){
+            data->stepS /= 2;
+            if(data->stepS <= 0) {
+                data->shellSorted = true;
+                return 1;
+            }
+            data->stepI = data->stepS;
+        }
+        data->stepJ = data->stepI - data->stepS;
+    }
+    else{
+        int t = input->arr[data->stepJ];
+        input->arr[data->stepJ] = input->arr[data->stepJ + data->stepS];
+        input->arr[data->stepJ + data->stepS] = t;
+        data->stepJ -= data->stepS;
+    }
+    return 0;
 }
 
 int StepSortArray(SortingAlgorithm alg, InputArray *input, SortData *data) {
@@ -177,6 +211,11 @@ void ResetSorter(SortData *data, int arraySize) {
     data->isSorted = true;
     data->direction = 1;
     data->unreplacementCounter = 0;
+
+    data->stepS = arraySize / 2;
+    data->stepI = arraySize / 2;
+    data->stepJ = 0;
+    data->shellSorted = false;
 }
 
 int EstimateSorter(SortingAlgorithm alg, InputArray *input, InputArray *sorted) {

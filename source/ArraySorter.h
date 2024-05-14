@@ -13,6 +13,12 @@ typedef struct{
 
     //Shaker
     int unreplacementCounter;
+
+    //Shell sort
+    int stepS;
+    int stepI;
+    int stepJ;
+    bool shellSorted;
 } SortData;
 
 int StepSortArray(SortingAlgorithm alg, InputArray *input, SortData *data);
