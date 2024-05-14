@@ -1,6 +1,7 @@
 #include "SortProphiler.h"
 #include "InputArray.h"
 #include "ArrayShuffler.h"
+#include "ArraySorter.h"
 #include "malloc.h"
 #include "pthread.h"
 #include "semaphore.h"
@@ -45,10 +46,10 @@ void InitProphiler(){
     sc.proph.atStart = true;
 }
 
-int Bubble(InputArray *arr){
+/*int Bubble(InputArray *arr){
 
-   /* double res = ((double)arr->filled*(double)arr->filled)/(10000);
-    usleep((int)res);*/
+   *//* double res = ((double)arr->filled*(double)arr->filled)/(10000);
+    usleep((int)res);*//*
 
     bool sorted = false;
     //int ee = 1000 < arr->filled-1 ? 1000 : arr->filled-1;
@@ -64,7 +65,7 @@ int Bubble(InputArray *arr){
     }
     return 0;
     //return (t%213)*473 %16;
-}
+}*/
 
 int cmp(const void *a, const void *b){
     return*(int*)a-*(int*)b;
@@ -88,7 +89,7 @@ void *SortT(void *inref){
         struct timespec end;
         clock_gettime(CLOCK_MONOTONIC,&start);
         //qsort(in->arr.arr,in->arr.filled,sizeof(int),cmp);
-        Bubble(&in->arr);
+        SortArray(sc.proph.sortingAlgorithm, &in->arr);
         clock_gettime(CLOCK_MONOTONIC,&end);
         int time = (int)(end.tv_sec-start.tv_sec)*1000+(int)((end.tv_nsec-start.tv_nsec)*1e-6);
         pthread_mutex_lock(&mutex);

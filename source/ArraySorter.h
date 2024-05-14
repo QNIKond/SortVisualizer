@@ -2,24 +2,25 @@
 #include "InputArray.h"
 
 typedef struct{
+    //All
     int i;
     bool isSorted;
+
+    //Shaker, Insertion
     int leftBoundary;
     int rightBoundary;
     int direction;
+
+    //Shaker
     int unreplacementCounter;
 } SortData;
 
-int StepSortArray(SConfig *sconf, InputArray *input, SortData *data);
+int StepSortArray(SortingAlgorithm alg, InputArray *input, SortData *data);
+
+void SortArray(SortingAlgorithm alg, InputArray *input);
 
 void ResetSorter(SortData *data, int arraySize);
 
-int EstimateSorter(SConfig *sconf, InputArray *input, InputArray *sorted);
+int EstimateSorter(SortingAlgorithm alg, InputArray *input, InputArray *sorted);
 
-void FullBubbleSort(InputArray *input);
-
-void FullShakerSort(InputArray *input);
-
-void FullInsertionSort(InputArray *input);
-
-void FullShellSort(InputArray *input);
+void ValidateSorts();

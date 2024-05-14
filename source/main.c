@@ -6,6 +6,7 @@
 #include "../external/darkTheme.h"
 #include "SortVisualiser.h"
 #include "SortProphiler.h"
+#include "ArraySorter.h"
 
 void UpdateDrawFrame(void);
 
@@ -35,6 +36,7 @@ int main()
     InitSortConfig(&input);
     InitSortVisualizer();
     InitProphiler();
+    ValidateSorts();
     while (!WindowShouldClose())
     {
         UpdateDrawFrame();

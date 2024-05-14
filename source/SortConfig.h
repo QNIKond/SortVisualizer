@@ -1,11 +1,17 @@
 #pragma once
 #include "raylib.h"
 
+#define LISTOFSORTS \
+    SMACRO(Insertion)       \
+    SMACRO(Shell)           \
+    SMACRO(Bubble)          \
+    SMACRO(Shaker)
+
+
 typedef enum {
-    InsertionSort = 0,
-    ShellSort,
-    BubbleSort,
-    ShakerSort,
+#define SMACRO(X) SA##X##Sort,
+LISTOFSORTS
+#undef SMACRO
     } SortingAlgorithm;
 
 typedef enum {
