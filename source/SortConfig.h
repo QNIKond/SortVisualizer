@@ -27,8 +27,8 @@ typedef enum {
 
 typedef enum {
     PlainColoring,
+    RainbowColoring,
     GradientColoring,
-    RainbowColoring
 } Coloring;
 
 typedef struct{

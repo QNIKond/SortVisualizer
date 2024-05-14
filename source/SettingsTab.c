@@ -6,7 +6,7 @@
 #define LINEHEIGHT 24
 #define BIGBUTTONHEIGHT (LINEHEIGHT*1.5)
 #define VPADDING 3
-#define VISLINESCOUNT 7//21
+#define VISLINESCOUNT 9//21
 #define PROPHLINESCOUNT 10//21
 #define TEXTBOXWIDTH 40
 #define PADDING 10
@@ -154,12 +154,12 @@ void UpdateDrawVisTab(SConfig *sconf, Rectangle bounds){
     GuiSetStyle(DEFAULT,TEXT_ALIGNMENT,TEXT_ALIGN_LEFT);
     //UpdateDrawCheckBox(&bounds,"Show info",&sconf->vs.showInfo);
     //UpdateDrawCheckBox(&bounds,"Show progress bars",&sconf->vs.showProgressBars);
+    UpdateDrawDropdown(&bounds,"Coloring","Plain;Rainbow",&sconf->visual.coloring,2,id++);
     UpdateDrawCheckBox(&bounds,"Show shuffling",&sconf->visual.showShuffling);
     UpdateDrawSlider(&bounds, "Animation length(s):", &sconf->visual.animationLength, 2, 45, id++);
     DrawSplitter(&bounds);
     //UpdateDrawSubButton(&bounds,0,"", ColorToInt(sconf->vs.col2));
     //UpdateDrawSubButton(&bounds,1,"",ColorToInt(sconf->vs.col1));
-    //UpdateDrawDropdown(&bounds,"Coloring","Plain;Gradient;Rainbow",&sconf->vs.coloring,2,&tbstates[1]);
 //UpdateDrawCheckBox(&bounds,"Mirrored",&sconf->vs.mirrored);
     //UpdateDrawCheckBox(&bounds,"Connected dots",&sconf->vs.connectedDots);
     //UpdateDrawCheckBox(&bounds,"Hollow",&sconf->vs.hollow);
