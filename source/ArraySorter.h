@@ -15,3 +15,11 @@ int StepSortArray(SConfig *sconf, InputArray *input, SortData *data);
 void ResetSorter(SortData *data, int arraySize);
 
 int EstimateSorter(SConfig *sconf, InputArray *input, InputArray *sorted);
+
+void FullBubbleSort(InputArray *input);
+
+void FullShakerSort(InputArray *input);
+
+void FullInsertionSort(InputArray *input);
+
+void FullShellSort(InputArray *input);
