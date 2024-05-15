@@ -4,6 +4,7 @@ void InitSortConfig(SConfig *sconfig){
     *sconfig = (SConfig){0};
     sconfig->array.size = 40;
     sconfig->visual.showValueAsLength = true;
+    sconfig->visual.coloring = GradientColoring;
     sconfig->visual.col1 = WHITE;
     sconfig->visual.col2 = RED;
     sconfig->visual.animationLength = 15;

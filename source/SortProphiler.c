@@ -46,52 +46,30 @@ void InitProphiler(){
     sc.proph.atStart = true;
 }
 
-/*int Bubble(InputArray *arr){
-
-   *//* double res = ((double)arr->filled*(double)arr->filled)/(10000);
-    usleep((int)res);*//*
-
-    bool sorted = false;
-    //int ee = 1000 < arr->filled-1 ? 1000 : arr->filled-1;
-    while(!sorted){
-        sorted = true;
-        for(int i = 0; i < arr->filled-1; ++i)
-            if(arr->arr[i] > arr->arr[i+1]){
-                int t = arr->arr[i];
-                arr->arr[i] = arr->arr[i+1];
-                arr->arr[i+1] = t;
-                sorted = false;
-            }
-    }
-    return 0;
-    //return (t%213)*473 %16;
-}*/
-
-int cmp(const void *a, const void *b){
-    return*(int*)a-*(int*)b;
-}
-
 void *SortT(void *inref){
     ThreadInput *in = (ThreadInput*)inref;
     srand(in->seed);
     int i = in->offset;
     while((i<gdFilled)) {
-        pthread_rwlock_rdlock(&tiLock);
+
+       /* pthread_rwlock_rdlock(&tiLock);
         if(in->exit) {
             pthread_rwlock_unlock(&tiLock);
             return NULL;
         }
-        pthread_rwlock_unlock(&tiLock);
+        pthread_rwlock_unlock(&tiLock);*/
+        pthread_testcancel();
         in->arr.filled = (int)((double)i * nStep + sc.proph.minSize);
         GenerateArray(&in->arr);
         ShuffleArray(&sc,&in->arr);
+
         struct timespec start;
         struct timespec end;
         clock_gettime(CLOCK_MONOTONIC,&start);
-        //qsort(in->arr.arr,in->arr.filled,sizeof(int),cmp);
         SortArray(sc.proph.sortingAlgorithm, &in->arr);
         clock_gettime(CLOCK_MONOTONIC,&end);
         int time = (int)(end.tv_sec-start.tv_sec)*1000+(int)((end.tv_nsec-start.tv_nsec)*1e-6);
+
         pthread_mutex_lock(&mutex);
         graphData[i] = time;
         if(time > gdMaxValue)
@@ -104,14 +82,16 @@ void *SortT(void *inref){
 
 void TryStopThreads(){
     if(activeThreads == createdThreads) {
-        pthread_rwlock_wrlock(&tiLock);
+        //pthread_rwlock_wrlock(&tiLock);
         for (int i = 0; i < createdThreads; ++i) {
             tInput[i].exit = 1;
+            pthread_cancel(threads[i]);
         }
-        pthread_rwlock_unlock(&tiLock);
+        //pthread_rwlock_unlock(&tiLock);
     }
     for(int i = 0; i < createdThreads; ++i){
-        if(!_pthread_tryjoin(threads[i],NULL))
+        int result = _pthread_tryjoin(threads[i],NULL);
+        if(!result)
             --activeThreads;
     }
 }

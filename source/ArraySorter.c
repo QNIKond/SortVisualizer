@@ -1,6 +1,7 @@
 #include "ArraySorter.h"
 #include "stdlib.h"
 #include "stdio.h"
+#include "pthread.h"
 
 void BubbleSort(InputArray *input) {
     for (int i = 0; i < input->filled - 1; i++) {
@@ -10,6 +11,7 @@ void BubbleSort(InputArray *input) {
                 input->arr[j - 1] = input->arr[j];
                 input->arr[j] = t;
             }
+            pthread_testcancel();
         }
     }
 }
@@ -46,6 +48,7 @@ void ShakerSort(InputArray *input) {
                 input->arr[i + 1] = t;
                 wasReplacement = true;
             }
+            pthread_testcancel();
         }
         leftBoundary++;
 
@@ -57,8 +60,10 @@ void ShakerSort(InputArray *input) {
 
                 wasReplacement = true;
             }
+            pthread_testcancel();
         }
         rightBoundary--;
+        pthread_testcancel();
     }
 }
 
@@ -104,7 +109,9 @@ void InsertionSort(InputArray *input) {
         while ((input->arr[j] > t) && (j >= 0)) {
             input->arr[j + 1] = input->arr[j];
             j--;
+            pthread_testcancel();
         }
+        pthread_testcancel();
         input->arr[j + 1] = t;
     }
 }
@@ -146,22 +153,12 @@ void ShellSort(InputArray *input) {
                 int t = input->arr[j];
                 input->arr[j] = input->arr[j + s];
                 input->arr[j + s] = t;
+                pthread_testcancel();
             }
+            pthread_testcancel();
         }
+        pthread_testcancel();
     }
-}
-
-int SteShellSort(InputArray *input, SortData *data) {
-    for (int s = input->filled / 2; s > 0; s /= 2) {
-        for (int i = s; i < input->filled; ++i) {
-            for (int j = i - s; j >= 0 && input->arr[j] > input->arr[j + s]; j -= s) {
-                int t = input->arr[j];
-                input->arr[j] = input->arr[j + s];
-                input->arr[j + s] = t;
-            }
-        }
-    }
-    return 1;
 }
 
 int StepShellSort(InputArray *input, SortData *data){
