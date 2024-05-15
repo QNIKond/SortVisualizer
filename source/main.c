@@ -26,7 +26,7 @@ void LoadDrawIcon(){
 
 int main()
 {
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE|FLAG_WINDOW_ALWAYS_RUN);
     InitWindow(1200, 800, "Sort visualiser");
     SetTargetFPS(60);
     SetExitKey(KEY_NULL);

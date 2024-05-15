@@ -154,7 +154,7 @@ void UpdateDrawVisTab(SConfig *sconf, Rectangle bounds){
     GuiSetStyle(DEFAULT,TEXT_ALIGNMENT,TEXT_ALIGN_LEFT);
     //UpdateDrawCheckBox(&bounds,"Show info",&sconf->vs.showInfo);
     //UpdateDrawCheckBox(&bounds,"Show progress bars",&sconf->vs.showProgressBars);
-    UpdateDrawDropdown(&bounds,"Coloring","Plain;Rainbow",&sconf->visual.coloring,2,id++);
+    UpdateDrawDropdown(&bounds,"Coloring","Plain;Rainbow;Disparity;Gradient",&sconf->visual.coloring,0,id++);
     UpdateDrawCheckBox(&bounds,"Show shuffling",&sconf->visual.showShuffling);
     UpdateDrawSlider(&bounds, "Animation length(s):", &sconf->visual.animationLength, 2, 45, id++);
     DrawSplitter(&bounds);

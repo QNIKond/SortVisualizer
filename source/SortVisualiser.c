@@ -3,6 +3,7 @@
 #include "SortVisualiser.h"
 #include "ArrayShuffler.h"
 #include "ArraySorter.h"
+#include "math.h"
 
 InputArray arr;
 InputArray sorted;
@@ -25,27 +26,42 @@ enum AnimState{
 
 #define SVBARSVOFFSET 100
 #define SVBARSHOFFSET 100
+
+Color GetVisColor(Vector2 pos, int max){
+    float t;
+    switch(sconf.visual.coloring){
+
+        case PlainColoring:
+            return sconf.visual.col1;
+        case RainbowColoring:
+            return ColorFromHSV(360.0f*pos.y/(float)max,1,1);
+        case DisparityColoring:
+            t = (float)abs((int)(pos.x-pos.y))/(float)max;
+            t = sqrt(t) * 255;
+            return ColorAlphaBlend(RED,BLUE,(Color){t,t,t,t});
+        case GradientColoring:
+            t = 255*pos.y/(float)max;
+            return ColorAlphaBlend(RED,BLUE,(Color){t,t,t,t});
+    }
+}
+
 void DrawBars(Rectangle bounds){
     double length = bounds.width-SVBARSHOFFSET*2;
     double height = (bounds.height-SVBARSVOFFSET*2)/arr.filled;
     if(arr.filled<length){
         double width =  length/arr.filled;
         for(int i = 0; i < arr.filled; ++i){
-            Color col = WHITE;
-            if(sconf.visual.coloring == RainbowColoring)
-                col = ColorFromHSV(360.0f*(float)arr.arr[i]/(float )arr.filled,1,1);
             DrawRectangle((int)(bounds.x+SVBARSHOFFSET+width*i), bounds.y+bounds.height-SVBARSVOFFSET-height*(arr.arr[i] + 1),
-                          (int)width+1, height*(arr.arr[i] + 1), col);
+                          (int)width+1, height*(arr.arr[i] + 1),
+                          GetVisColor((Vector2){i,arr.arr[i]},arr.filled));
         }
     }
     else{
         double iSkip =  arr.filled/length;
         for(int i = 0; i < length; ++i){
-            Color col = WHITE;
-            if(sconf.visual.coloring == RainbowColoring)
-                col = ColorFromHSV(360.0f*(float)arr.arr[(int)(i*iSkip)]/(float )arr.filled,1,1);
             DrawLine((int)(bounds.x+SVBARSHOFFSET+i), bounds.y+bounds.height-SVBARSVOFFSET-height*(arr.arr[(int)(i*iSkip)] + 1),
-                     (int)(bounds.x+SVBARSHOFFSET+i), bounds.y+bounds.height-SVBARSVOFFSET, col);
+                     (int)(bounds.x+SVBARSHOFFSET+i), bounds.y+bounds.height-SVBARSVOFFSET,
+                     GetVisColor((Vector2){(int)(i*iSkip),arr.arr[(int)(i*iSkip)]},arr.filled));
         }
     }
 }

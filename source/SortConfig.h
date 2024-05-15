@@ -28,6 +28,7 @@ typedef enum {
 typedef enum {
     PlainColoring,
     RainbowColoring,
+    DisparityColoring,
     GradientColoring,
 } Coloring;
 
