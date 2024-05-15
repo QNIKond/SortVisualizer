@@ -23,6 +23,7 @@ int gdSize = 0;
 int gdFilled = 0;
 int gdMaxValue;
 double nStep;
+int clockType;
 pthread_mutex_t mutex;
 
 typedef struct{
@@ -65,9 +66,9 @@ void *SortT(void *inref){
 
         struct timespec start;
         struct timespec end;
-        clock_gettime(CLOCK_MONOTONIC,&start);
+        clock_gettime(clockType,&start);
         SortArray(sc.proph.sortingAlgorithm, &in->arr);
-        clock_gettime(CLOCK_MONOTONIC,&end);
+        clock_gettime(clockType,&end);
         int time = (int)(end.tv_sec-start.tv_sec)*1000+(int)((end.tv_nsec-start.tv_nsec)*1e-6);
 
         pthread_mutex_lock(&mutex);
@@ -98,6 +99,14 @@ void TryStopThreads(){
 
 void StartSortingThreads(){
     gdFilled = sc.proph.nCount;
+    switch(sc.proph.measureTarget){
+        case MTRealTime:
+            clockType = CLOCK_MONOTONIC;
+            break;
+        case MTCPUTime:
+            clockType = CLOCK_THREAD_CPUTIME_ID;
+            break;
+    }
     if(gdSize<gdFilled){
         gdSize = gdFilled;
         graphData = realloc(graphData,gdSize*sizeof(int));
@@ -225,6 +234,7 @@ void SyncConfigsForProph(SConfig *input){
 }
 
 void FreeProphiler(){
+    TryStopThreads();
     if(graphData)
         free(graphData);
     pthread_mutex_destroy(&mutex);

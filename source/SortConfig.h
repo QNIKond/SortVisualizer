@@ -32,6 +32,11 @@ typedef enum {
     GradientColoring,
 } Coloring;
 
+typedef enum {
+    MTRealTime = 0,
+    MTCPUTime
+}MeasureTarget;
+
 typedef struct{
     struct {
         int size;
@@ -63,6 +68,7 @@ typedef struct{
         ShufflingAlgorithm shufflingAlgorithm;
         int minSize;
         int maxSize;
+        MeasureTarget measureTarget;
         int nCount;
         int threads;
 #define MAXTHREADS 32
