@@ -12,6 +12,7 @@ typedef enum {
 #define SMACRO(X) SA##X##Sort,
 LISTOFSORTS
 #undef SMACRO
+SANone //Must be lust
     } SortingAlgorithm;
 
 typedef enum {
@@ -64,7 +65,8 @@ typedef struct{
 
     } visual;
     struct {
-        SortingAlgorithm sortingAlgorithm;
+        SortingAlgorithm sortingAlgorithms[SANone];
+        int saCount;
         ShufflingAlgorithm shufflingAlgorithm;
         int minSize;
         int maxSize;

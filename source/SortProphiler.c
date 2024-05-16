@@ -67,7 +67,7 @@ void *SortT(void *inref){
         struct timespec start;
         struct timespec end;
         clock_gettime(clockType,&start);
-        SortArray(sc.proph.sortingAlgorithm, &in->arr);
+        SortArray(sc.proph.sortingAlgorithms[0], &in->arr);
         clock_gettime(clockType,&end);
         int time = (int)(end.tv_sec-start.tv_sec)*1000+(int)((end.tv_nsec-start.tv_nsec)*1e-6);
 

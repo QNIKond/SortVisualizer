@@ -11,7 +11,10 @@ void InitSortConfig(SConfig *sconfig){
     sconfig->visual.showShuffling = true;
     sconfig->visual.showProgressBars = true;
     sconfig->array.sortingAlgorithm = SABubbleSort;
-    sconfig->proph.sortingAlgorithm = SABubbleSort;
+    sconfig->proph.sortingAlgorithms[0] = SABubbleSort;
+    for(int i = 1; i < SANone; ++i)
+        sconfig->proph.sortingAlgorithms[i] = SANone;
+    sconfig->proph.saCount = 1;
     sconfig->proph.minSize = 100;
     sconfig->proph.maxSize = 100000;
     sconfig->proph.nCount = 100;

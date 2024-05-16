@@ -7,7 +7,7 @@
 #define BIGBUTTONHEIGHT (LINEHEIGHT*1.5)
 #define VPADDING 3
 #define VISLINESCOUNT 9//21
-#define PROPHLINESCOUNT 10//21
+#define PROPHLINESCOUNT 12//21
 #define TEXTBOXWIDTH 40
 #define PADDING 10
 #define ALARMCOLOR 0xDD1111FF
@@ -93,8 +93,10 @@ int UpdateDrawDropdown(Rectangle *bounds, const char *text, const char* options,
         }
     }
     bounds->y -= LINEHEIGHT;
-    GuiLabel(*bounds,text);
-    bounds->y -= LINEHEIGHT;
+    if(text) {
+        GuiLabel(*bounds, text);
+        bounds->y -= LINEHEIGHT;
+    }
     return prevData != *data;
 }
 
@@ -146,6 +148,45 @@ void DrawProphButton(SConfig *sconf, Rectangle *bounds){
     GuiSetStyle(BUTTON,BASE_COLOR_NORMAL, defaultColor);
 }
 
+int IsInSAList(SConfig *sconf, SortingAlgorithm sa){
+    for(int i = 0; i < sconf->proph.saCount; ++i)
+        if(sa == sconf->proph.sortingAlgorithms[i])
+            return 1;
+    return 0;
+}
+
+void UpdateDrawSortsPick(SConfig *sconf, Rectangle *bounds, int *id){
+    #define SMACRO(X) #X " sort;"
+    int cur = sconf->proph.saCount;
+    if(cur == SANone)
+        --cur;
+
+    while(cur + 1){
+        if(cur >= SANone)
+            --cur;
+        SortingAlgorithm prev = sconf->proph.sortingAlgorithms[cur];
+        UpdateDrawDropdown(bounds, 0, LISTOFSORTS "None", &prev,
+                                                              0, (*id)++);
+        if((prev != sconf->proph.sortingAlgorithms[cur]) && !IsInSAList(sconf, prev) && !((cur == 0) && (prev == SANone))) {
+            if(sconf->proph.sortingAlgorithms[cur] == SANone)
+                sconf->proph.sortingAlgorithms[cur+1] = SANone;
+            sconf->proph.sortingAlgorithms[cur] = prev;
+            if((sconf->proph.saCount < SANone) && (cur == sconf->proph.saCount)) {
+                ++sconf->proph.saCount;
+            }
+
+            sconf->proph.updated = true;
+        }
+        if(sconf->proph.sortingAlgorithms[cur] == SANone)
+            sconf->proph.saCount = cur;
+        if(cur >= SANone)
+            --cur;
+        --cur;
+    }
+    GuiLabel(*bounds, "Sorting algorithms:");
+#undef SMACRO
+}
+
 void UpdateDrawVisTab(SConfig *sconf, Rectangle bounds){
     int id = SNOTACTIVE+1;
     bounds.height = LINEHEIGHT;
@@ -176,10 +217,14 @@ void UpdateDrawVisTab(SConfig *sconf, Rectangle bounds){
 }
 
 void UpdateDrawProphTab(SConfig *sconf, Rectangle bounds){
+
+
+
     int id = SNOTACTIVE+1;
     bounds.height = LINEHEIGHT;
-    bounds.y += LINEHEIGHT*PROPHLINESCOUNT;
+    bounds.y += LINEHEIGHT*(PROPHLINESCOUNT + sconf->proph.saCount - (sconf->proph.saCount == SANone));
     DrawProphButton(sconf,&bounds);
+    GuiSetStyle(DEFAULT,TEXT_ALIGNMENT,TEXT_ALIGN_LEFT);
     UpdateDrawCheckBox(&bounds,"Static Y axis",&sconf->graph.staticY);
     sconf->proph.updated |= UpdateDrawSlider(&bounds, "Threads count:", &sconf->proph.threads, 1, 24, id++);
     sconf->proph.updated |= UpdateDrawSlider(&bounds, "Measurements count:", &sconf->proph.nCount, 5, 1000, id++);
@@ -188,7 +233,16 @@ void UpdateDrawProphTab(SConfig *sconf, Rectangle bounds){
     sconf->proph.updated |= UpdateDrawSlider(&bounds, "Min array size:", &sconf->proph.minSize, 5, 4000000, id++);
     if(sconf->proph.maxSize - sconf->proph.minSize<sconf->proph.nCount)
         sconf->proph.minSize = sconf->proph.maxSize - sconf->proph.nCount;
-    sconf->proph.updated |= UpdateDrawDropdown(&bounds, "Sorting algorithm","Insertion sort; Shell sort; Bubble sort; Shaker sort", &sconf->proph.sortingAlgorithm, 0, id++);
+    UpdateDrawSortsPick(sconf,&bounds, &id);
+/*#define SMACRO(X) #X " sort;"
+    int i = 1;
+    while((i<SANone) && (sconf->proph.sortingAlgorithms[i - 1] != SANone)) {
+        sconf->proph.updated |= UpdateDrawDropdown(&bounds, 0, LISTOFSORTS "None", &sconf->proph.sortingAlgorithms[i++],
+                                                   0, id++);
+    }
+    sconf->proph.updated |= UpdateDrawDropdown(&bounds, "Sorting algorithms",LISTOFSORTS, &sconf->proph.sortingAlgorithms[0], 0, id++);
+    sconf->proph.saCount = i;
+#undef SMACRO*/
 }
 
 void UpdateDrawSettingTab(SConfig *sconf, Rectangle bounds){
