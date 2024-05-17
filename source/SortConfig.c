@@ -16,8 +16,8 @@ void InitSortConfig(SConfig *sconfig){
         sconfig->proph.sortingAlgorithms[i] = SANone;
     sconfig->proph.saCount = 1;
     sconfig->proph.minSize = 100;
-    sconfig->proph.maxSize = 100000;
-    sconfig->proph.nCount = 100;
+    sconfig->proph.maxSize = 20000;
+    sconfig->proph.nCount = 20;
     sconfig->proph.threads = 6;
     sconfig->graph.staticY = false;
     sconfig->graph.col1 = BLUE;

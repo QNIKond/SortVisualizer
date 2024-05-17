@@ -2,7 +2,7 @@
 #include "malloc.h"
 
 void GenerateArray(InputArray *input){
-    for(int i = 0; i < input->filled; ++i)
+    for(int i = 0; i < input->filled; ++i)//100
         input->arr[i] = i;
 }
 

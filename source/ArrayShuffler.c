@@ -6,7 +6,7 @@ struct SUShared{
 } suShared;
 
 int ShuffleArray(SConfig *sconf, InputArray *input){
-    for(int i = 0; i < input->filled-1; ++i){
+    for(int i = 0; i < input->filled-1; ++i){//100
         int t = input->arr[i];
         int r = rand()%(input->filled-i-1)+i+1;
         input->arr[i] = input->arr[r];

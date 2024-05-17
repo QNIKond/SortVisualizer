@@ -11,11 +11,12 @@
 #include "math.h"
 #include "../external/raygui.h"
 
+
+
 //#define THREADSC 6
 
 
-int activeThreads = 0;
-int createdThreads = 0;
+
 
 SConfig sc;
 int *graphData = 0;
@@ -25,12 +26,21 @@ int gdMaxValue;
 double nStep;
 int clockType;
 pthread_mutex_t mutex;
+pthread_attr_t pattr;
+
+struct TEXIT{
+    bool shouldExit;
+    int activeThreads;
+    pthread_mutex_t exitMutex;
+} TExit = {
+        .shouldExit = false,
+        .activeThreads = 0
+};
 
 typedef struct{
     InputArray arr;
     int step;
     int offset;
-    int exit;
     int seed;
 }ThreadInput;
 pthread_rwlock_t tiLock;
@@ -38,64 +48,60 @@ pthread_rwlock_t tiLock;
 pthread_t threads[MAXTHREADS];
 ThreadInput tInput[MAXTHREADS];
 
+#define PSEMPTY -1
+#define PSRESERVED -2
+
 void InitProphiler(){
 
     pthread_mutex_init(&mutex,NULL);
+    pthread_mutex_init(&TExit.exitMutex,NULL);
     pthread_rwlock_init(&tiLock,NULL);
-    for(int i = 0; i < MAXTHREADS; ++i)
-        InitInputArray(&tInput[i].arr,1);
+    pthread_attr_init(&pattr);
+    pthread_attr_setdetachstate(&pattr,PTHREAD_CREATE_DETACHED);
+    for(int i = 0; i < MAXTHREADS; ++i) {
+        InitInputArray(&tInput[i].arr, 1);
+    }
     sc.proph.atStart = true;
+}
+
+int ReserveNext(int *i, int step, int prevResult){
+    pthread_mutex_lock(&mutex);
+    if(prevResult>=0) {
+        graphData[*i] = prevResult;
+        if (prevResult > gdMaxValue)
+            gdMaxValue = prevResult;
+    }
+    while((*i < gdFilled) && (graphData[*i] != PSEMPTY))
+        *i += step;
+    if(*i < gdFilled)
+        graphData[*i] = PSRESERVED;
+    pthread_mutex_unlock(&mutex);
+    return *i < gdFilled;
 }
 
 void *SortT(void *inref){
     ThreadInput *in = (ThreadInput*)inref;
     srand(in->seed);
     int i = in->offset;
-    while((i<gdFilled)) {
-
-       /* pthread_rwlock_rdlock(&tiLock);
-        if(in->exit) {
-            pthread_rwlock_unlock(&tiLock);
-            return NULL;
-        }
-        pthread_rwlock_unlock(&tiLock);*/
-        pthread_testcancel();
+    int result = PSEMPTY;
+    while(ReserveNext(&i,in->step,result)) {
         in->arr.filled = (int)((double)i * nStep + sc.proph.minSize);
         GenerateArray(&in->arr);
         ShuffleArray(&sc,&in->arr);
-
         struct timespec start;
         struct timespec end;
         clock_gettime(clockType,&start);
         SortArray(sc.proph.sortingAlgorithms[0], &in->arr);
         clock_gettime(clockType,&end);
-        int time = (int)(end.tv_sec-start.tv_sec)*1000+(int)((end.tv_nsec-start.tv_nsec)*1e-6);
-
-        pthread_mutex_lock(&mutex);
-        graphData[i] = time;
-        if(time > gdMaxValue)
-            gdMaxValue = time;
-        pthread_mutex_unlock(&mutex);
-        i += in->step;
+        result = (int)(end.tv_sec-start.tv_sec)*1000+(int)((end.tv_nsec-start.tv_nsec)*1e-6);
     }
+    pthread_mutex_lock(&TExit.exitMutex);
+    --TExit.activeThreads;
+    pthread_mutex_unlock(&TExit.exitMutex);
     return NULL;
 }
 
-void TryStopThreads(){
-    if(activeThreads == createdThreads) {
-        //pthread_rwlock_wrlock(&tiLock);
-        for (int i = 0; i < createdThreads; ++i) {
-            tInput[i].exit = 1;
-            pthread_cancel(threads[i]);
-        }
-        //pthread_rwlock_unlock(&tiLock);
-    }
-    for(int i = 0; i < createdThreads; ++i){
-        int result = _pthread_tryjoin(threads[i],NULL);
-        if(!result)
-            --activeThreads;
-    }
-}
+
 
 void StartSortingThreads(){
     gdFilled = sc.proph.nCount;
@@ -108,24 +114,23 @@ void StartSortingThreads(){
             break;
     }
     if(gdSize<gdFilled){
-        gdSize = gdFilled;
+        gdSize = gdFilled;//20
         graphData = realloc(graphData,gdSize*sizeof(int));
     }
     for(int i = 0; i < gdFilled; ++i)
-        graphData[i] = -1;
+        graphData[i] = PSEMPTY;
     gdMaxValue = 0;
     nStep = (double)(sc.proph.maxSize-sc.proph.minSize)/gdFilled;
 
-    createdThreads = sc.proph.threads;
-    for(int i = 0; i < createdThreads; ++i) {
+    TExit.activeThreads = sc.proph.threads;
+    TExit.shouldExit = false;
+    for(int i = 0; i < TExit.activeThreads; ++i) {
         ResizeInputArray(&(tInput[i].arr),sc.proph.maxSize);
-        tInput[i].step = createdThreads;
+        tInput[i].step = TExit.activeThreads;
         tInput[i].offset = i;
-        tInput[i].exit = 0;
         tInput[i].seed = rand();
-        pthread_create(&threads[i],NULL,SortT,(void*)&tInput[i]);
+        pthread_create(&threads[i],&pattr,SortT,(void*)&tInput[i]);
     }
-    activeThreads = createdThreads;
 }
 
 #define DOTRADIUS 4
@@ -188,7 +193,7 @@ void DrawGraph(Rectangle bounds){
     float stepX = bounds.width/(gdFilled-1);
     float stepY = bounds.height/gdMaxValue;
     for(int i = 0; i < gdFilled; ++i){
-        if(graphData[i] == -1)
+        if(graphData[i] < 0)
             break;
         Vector2 dot = {i*stepX+bounds.x,bounds.height-graphData[i]*stepY+bounds.y};
         if(gdFilled<=50)
@@ -201,23 +206,37 @@ void DrawGraph(Rectangle bounds){
     pthread_mutex_unlock(&mutex);
 }
 
+int GetActiveThreads() {
+    pthread_mutex_lock(&TExit.exitMutex);
+    int result = TExit.activeThreads;
+    pthread_mutex_unlock(&TExit.exitMutex);
+    return result;
+}
+
+void StopThreads(){
+    pthread_mutex_lock(&TExit.exitMutex);
+    TExit.shouldExit = true;
+    pthread_mutex_unlock(&TExit.exitMutex);
+}
+
 #define PROPHPADDING 120
 void UpdateDrawProphiler(Rectangle bounds){
     bounds.x += PROPHPADDING;
     bounds.y += PROPHPADDING;
     bounds.width -= 2 * PROPHPADDING;
     bounds.height -= 2 * PROPHPADDING;
+    if(!sc.proph.atStart && !GetActiveThreads())
+        sc.proph.atStart = true;
     if(sc.resetBtn){
-        if(sc.proph.atStart && !activeThreads) {
+        if(sc.proph.atStart) {
             StartSortingThreads();
             sc.proph.atStart = false;
         }
         else
-            sc.proph.atStart = true;
+            StopThreads();
         sc.resetBtn = false;
     }
-    if(sc.proph.atStart && activeThreads)
-        TryStopThreads();
+
     if(gdSize)
         DrawGraph(bounds);
 }
@@ -234,11 +253,13 @@ void SyncConfigsForProph(SConfig *input){
 }
 
 void FreeProphiler(){
-    TryStopThreads();
+    StopThreads();
     if(graphData)
         free(graphData);
     pthread_mutex_destroy(&mutex);
+    pthread_mutex_destroy(&TExit.exitMutex);
     pthread_rwlock_destroy(&tiLock);
+    pthread_attr_destroy(&pattr);
     for(int i = 0; i < MAXTHREADS; ++i)
         FreeInputArray(&tInput[i].arr);
 }

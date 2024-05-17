@@ -2,6 +2,24 @@
 #include "stdlib.h"
 #include "stdio.h"
 #include "pthread.h"
+#include "unistd.h"
+
+extern struct TEXIT{
+    bool shouldExit;
+    int activeThreads;
+    pthread_mutex_t exitMutex;
+} TExit;
+
+void TestPExit() {
+    pthread_mutex_lock(&TExit.exitMutex);
+    if (TExit.shouldExit) {
+        --TExit.activeThreads;
+        pthread_mutex_unlock(&TExit.exitMutex);
+        pthread_exit(NULL);
+    }
+    pthread_mutex_unlock(&TExit.exitMutex);
+}
+
 
 void BubbleSort(InputArray *input) {
     for (int i = 0; i < input->filled - 1; i++) {
@@ -11,8 +29,8 @@ void BubbleSort(InputArray *input) {
                 input->arr[j - 1] = input->arr[j];
                 input->arr[j] = t;
             }
-            pthread_testcancel();
         }
+        TestPExit();
     }
 }
 
@@ -48,10 +66,9 @@ void ShakerSort(InputArray *input) {
                 input->arr[i + 1] = t;
                 wasReplacement = true;
             }
-            pthread_testcancel();
         }
         leftBoundary++;
-
+        TestPExit();
         for (int i = leftBoundary; i <= rightBoundary; i++) {
             if (input->arr[i] > input->arr[i + 1]) {
                 int t = input->arr[i];
@@ -60,10 +77,9 @@ void ShakerSort(InputArray *input) {
 
                 wasReplacement = true;
             }
-            pthread_testcancel();
         }
+        TestPExit();
         rightBoundary--;
-        pthread_testcancel();
     }
 }
 
@@ -109,9 +125,8 @@ void InsertionSort(InputArray *input) {
         while ((input->arr[j] > t) && (j >= 0)) {
             input->arr[j + 1] = input->arr[j];
             j--;
-            pthread_testcancel();
         }
-        pthread_testcancel();
+        TestPExit();
         input->arr[j + 1] = t;
     }
 }
@@ -153,11 +168,9 @@ void ShellSort(InputArray *input) {
                 int t = input->arr[j];
                 input->arr[j] = input->arr[j + s];
                 input->arr[j + s] = t;
-                pthread_testcancel();
             }
-            pthread_testcancel();
         }
-        pthread_testcancel();
+        TestPExit();
     }
 }
 
