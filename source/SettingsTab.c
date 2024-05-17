@@ -7,7 +7,7 @@
 #define BIGBUTTONHEIGHT (LINEHEIGHT*1.5)
 #define VPADDING 3
 #define VISLINESCOUNT 9//21
-#define PROPHLINESCOUNT 12//21
+#define PROPHLINESCOUNT 14//21
 #define TEXTBOXWIDTH 40
 #define PADDING 10
 #define ALARMCOLOR 0xDD1111FF
@@ -225,6 +225,7 @@ void UpdateDrawProphTab(SConfig *sconf, Rectangle bounds){
     GuiSetStyle(DEFAULT,TEXT_ALIGNMENT,TEXT_ALIGN_LEFT);
     UpdateDrawCheckBox(&bounds,"Static Y axis",&sconf->graph.staticY);
     sconf->proph.updated |= UpdateDrawSlider(&bounds, "Threads count:", &sconf->proph.threads, 1, 24, id++);
+    sconf->proph.updated |= UpdateDrawSlider(&bounds, "Average from:", &sconf->proph.average, 1, 100, id++);
     sconf->proph.updated |= UpdateDrawSlider(&bounds, "Measurements count:", &sconf->proph.nCount, 5, 1000, id++);
     sconf->proph.updated |= UpdateDrawDropdown(&bounds, "Measure","Real time; CPU time", &sconf->proph.measureTarget, 0, id++);
     sconf->proph.updated |= UpdateDrawSlider(&bounds, "Max array size:", &sconf->proph.maxSize, 5, 400000000, id++);

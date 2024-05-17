@@ -72,6 +72,7 @@ typedef struct{
         int maxSize;
         MeasureTarget measureTarget;
         int nCount;
+        int average;
         int threads;
 #define MAXTHREADS 32
 

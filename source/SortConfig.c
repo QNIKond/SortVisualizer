@@ -18,6 +18,7 @@ void InitSortConfig(SConfig *sconfig){
     sconfig->proph.minSize = 100;
     sconfig->proph.maxSize = 20000;
     sconfig->proph.nCount = 20;
+    sconfig->proph.average = 1;
     sconfig->proph.threads = 6;
     sconfig->graph.staticY = false;
     sconfig->graph.graphColors[0] = BLUE;

@@ -85,15 +85,19 @@ void *SortT(void *inref){
     int j = 0;
     int result = PSEMPTY;
     while(ReserveNext(&i, &j,in->step,result)) {
-        in->arr.filled = (int)((double)i * nStep + sc.proph.minSize);
-        GenerateArray(&in->arr);
-        ShuffleArray(&sc,&in->arr);
-        struct timespec start;
-        struct timespec end;
-        clock_gettime(clockType,&start);
-        SortArray(sc.proph.sortingAlgorithms[j], &in->arr);
-        clock_gettime(clockType,&end);
-        result = (int)(end.tv_sec-start.tv_sec)*1000+(int)((end.tv_nsec-start.tv_nsec)*1e-6);
+        result = 0;
+        for(int av = 0; av < sc.proph.average; ++av) {
+            in->arr.filled = (int) ((double) i * nStep + sc.proph.minSize);
+            GenerateArray(&in->arr);
+            ShuffleArray(&sc, &in->arr);
+            struct timespec start;
+            struct timespec end;
+            clock_gettime(clockType, &start);
+            SortArray(sc.proph.sortingAlgorithms[j], &in->arr);
+            clock_gettime(clockType, &end);
+            result += (int) (end.tv_sec - start.tv_sec) * 1000 + (int) ((end.tv_nsec - start.tv_nsec) * 1e-6);
+        }
+        result /= sc.proph.average;
     }
     pthread_mutex_lock(&TExit.exitMutex);
     --TExit.activeThreads;
