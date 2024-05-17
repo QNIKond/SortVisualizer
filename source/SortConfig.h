@@ -80,7 +80,7 @@ typedef struct{
     } proph;
 
     struct {
-        Color col1;
+        Color graphColors[SANone];
         bool staticY;
     } graph;
 

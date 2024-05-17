@@ -20,7 +20,12 @@ void InitSortConfig(SConfig *sconfig){
     sconfig->proph.nCount = 20;
     sconfig->proph.threads = 6;
     sconfig->graph.staticY = false;
-    sconfig->graph.col1 = BLUE;
+    sconfig->graph.graphColors[0] = BLUE;
+    sconfig->graph.graphColors[1] = GREEN;
+    sconfig->graph.graphColors[2] = RED;
+    sconfig->graph.graphColors[3] = YELLOW;
+    for(int i = 4; i < SANone; ++i)
+        sconfig->graph.graphColors[i] = WHITE;
 }
 
 

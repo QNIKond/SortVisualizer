@@ -160,13 +160,13 @@ void UpdateDrawSortsPick(SConfig *sconf, Rectangle *bounds, int *id){
     int cur = sconf->proph.saCount;
     if(cur == SANone)
         --cur;
-
     while(cur + 1){
-        if(cur >= SANone)
-            --cur;
         SortingAlgorithm prev = sconf->proph.sortingAlgorithms[cur];
         UpdateDrawDropdown(bounds, 0, LISTOFSORTS "None", &prev,
-                                                              0, (*id)++);
+                                                              1, (*id)++);
+        if(prev != SANone)
+            DrawRectangleRec((Rectangle){bounds->x + bounds->width  - LINEHEIGHT, bounds->y + LINEHEIGHT,
+                              LINEHEIGHT, LINEHEIGHT}, sconf->graph.graphColors[cur]);
         if((prev != sconf->proph.sortingAlgorithms[cur]) && !IsInSAList(sconf, prev) && !((cur == 0) && (prev == SANone))) {
             if(sconf->proph.sortingAlgorithms[cur] == SANone)
                 sconf->proph.sortingAlgorithms[cur+1] = SANone;
@@ -179,8 +179,6 @@ void UpdateDrawSortsPick(SConfig *sconf, Rectangle *bounds, int *id){
         }
         if(sconf->proph.sortingAlgorithms[cur] == SANone)
             sconf->proph.saCount = cur;
-        if(cur >= SANone)
-            --cur;
         --cur;
     }
     GuiLabel(*bounds, "Sorting algorithms:");
