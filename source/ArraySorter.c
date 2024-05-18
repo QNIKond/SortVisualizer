@@ -7,19 +7,21 @@
 extern struct TEXIT{
     bool shouldExit;
     int activeThreads;
-    pthread_mutex_t exitMutex;
+    //pthread_rwlock_t exitLock;
+    pthread_spinlock_t exitSpin;
 } TExit;
 
 void TestPExit() {
-    pthread_mutex_lock(&TExit.exitMutex);
+    //pthread_rwlock_rdlock(&TExit.exitLock);
+    pthread_spin_lock(&TExit.exitSpin);
     if (TExit.shouldExit) {
         --TExit.activeThreads;
-        pthread_mutex_unlock(&TExit.exitMutex);
+        //pthread_rwlock_unlock(&TExit.exitLock);
+        pthread_spin_unlock(&TExit.exitSpin);
         pthread_exit(NULL);
     }
-    pthread_mutex_unlock(&TExit.exitMutex);
+    pthread_spin_unlock(&TExit.exitSpin);
 }
-
 
 void BubbleSort(InputArray *input) {
     for (int i = 0; i < input->filled - 1; i++) {

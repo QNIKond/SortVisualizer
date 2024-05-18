@@ -12,19 +12,20 @@
 #include "../external/raygui.h"
 
 SConfig sc;
-int *graphData[SANone] = {0};
+long long *graphData[SANone] = {0};
 int gdSize[SANone] = {0};
 int gdFilled = 0;
-int gdMaxValue;
+long long gdMaxValue;
 double nStep;
 int clockType;
-pthread_mutex_t mutex;
+pthread_spinlock_t gdSpin;
 pthread_attr_t pattr;
 
 struct TEXIT{
     bool shouldExit;
     int activeThreads;
-    pthread_mutex_t exitMutex;
+    //pthread_rwlock_t exitLock;
+    pthread_spinlock_t exitSpin;
 } TExit = {
         .shouldExit = false,
         .activeThreads = 0
@@ -36,7 +37,6 @@ typedef struct{
     int offset;
     int seed;
 }ThreadInput;
-pthread_rwlock_t tiLock;
 
 pthread_t threads[MAXTHREADS];
 ThreadInput tInput[MAXTHREADS];
@@ -45,10 +45,10 @@ ThreadInput tInput[MAXTHREADS];
 #define PSRESERVED -2
 
 void InitProphiler(){
-
-    pthread_mutex_init(&mutex,NULL);
-    pthread_mutex_init(&TExit.exitMutex,NULL);
-    pthread_rwlock_init(&tiLock,NULL);
+    pthread_spin_init(&gdSpin,0);
+    //pthread_mutex_init(&mutex,NULL);
+    //pthread_rwlock_init(&TExit.exitLock,NULL);
+    pthread_spin_init(&TExit.exitSpin,0);
     pthread_attr_init(&pattr);
     pthread_attr_setdetachstate(&pattr,PTHREAD_CREATE_DETACHED);
     for(int i = 0; i < MAXTHREADS; ++i) {
@@ -57,8 +57,8 @@ void InitProphiler(){
     sc.proph.atStart = true;
 }
 
-int ReserveNext(int *i, int *j, int step, int prevResult){
-    pthread_mutex_lock(&mutex);
+int ReserveNext(int *i, int *j, int step, long long prevResult){
+    pthread_spin_lock(&gdSpin);
     if(prevResult>=0) {
         graphData[*j][*i] = prevResult;
         if (prevResult > gdMaxValue)
@@ -74,7 +74,7 @@ int ReserveNext(int *i, int *j, int step, int prevResult){
     }
     if(*i < gdFilled)
         graphData[*j][*i] = PSRESERVED;
-    pthread_mutex_unlock(&mutex);
+    pthread_spin_unlock(&gdSpin);
     return *i < gdFilled;
 }
 
@@ -83,7 +83,7 @@ void *SortT(void *inref){
     srand(in->seed);
     int i = in->offset;
     int j = 0;
-    int result = PSEMPTY;
+    long long result = PSEMPTY;
     while(ReserveNext(&i, &j,in->step,result)) {
         result = 0;
         for(int av = 0; av < sc.proph.average; ++av) {
@@ -95,13 +95,15 @@ void *SortT(void *inref){
             clock_gettime(clockType, &start);
             SortArray(sc.proph.sortingAlgorithms[j], &in->arr);
             clock_gettime(clockType, &end);
-            result += (int) (end.tv_sec - start.tv_sec) * 1000 + (int) ((end.tv_nsec - start.tv_nsec) * 1e-6);
+            result += (long long)(end.tv_sec - start.tv_sec) * 1e9 + (int) ((end.tv_nsec - start.tv_nsec));
         }
         result /= sc.proph.average;
     }
-    pthread_mutex_lock(&TExit.exitMutex);
+    //pthread_rwlock_wrlock(&TExit.exitLock);
+    pthread_spin_lock(&TExit.exitSpin);
     --TExit.activeThreads;
-    pthread_mutex_unlock(&TExit.exitMutex);
+    //pthread_rwlock_unlock(&TExit.exitLock);
+    pthread_spin_unlock(&TExit.exitSpin);
     return NULL;
 }
 
@@ -120,7 +122,7 @@ void StartSortingThreads(){
     for(int i = 0; i < sc.proph.saCount; ++i)
         if(gdSize[i]<gdFilled){
             gdSize[i] = gdFilled;
-            graphData[i] = realloc(graphData[i],gdSize[i]*sizeof(int));
+            graphData[i] = realloc(graphData[i],gdSize[i]*sizeof(long long));
         }
     for(int i = 0; i < sc.proph.saCount; ++i)
         for(int j = 0; j < gdFilled; ++j)
@@ -189,9 +191,9 @@ void DrawGraphBack(Rectangle bounds){
 }
 
 void DrawGraph(Rectangle bounds, int graph){
-    pthread_mutex_lock(&mutex);
+    pthread_spin_lock(&gdSpin);
     if(!graphData[graph]) {
-        pthread_mutex_unlock(&mutex);
+        pthread_spin_unlock(&gdSpin);
         return;
     }
     Vector2 prevDot = {0};
@@ -208,20 +210,24 @@ void DrawGraph(Rectangle bounds, int graph){
         }
         prevDot = dot;
     }
-    pthread_mutex_unlock(&mutex);
+    pthread_spin_unlock(&gdSpin);
 }
 
 int GetActiveThreads() {
-    pthread_mutex_lock(&TExit.exitMutex);
+    //pthread_rwlock_rdlock(&TExit.exitLock);
+    pthread_spin_lock(&TExit.exitSpin);
     int result = TExit.activeThreads;
-    pthread_mutex_unlock(&TExit.exitMutex);
+    pthread_spin_unlock(&TExit.exitSpin);
+    //pthread_rwlock_unlock(&TExit.exitLock);
     return result;
 }
 
 void StopThreads(){
-    pthread_mutex_lock(&TExit.exitMutex);
+    //pthread_rwlock_wrlock(&TExit.exitLock);
+    pthread_spin_lock(&TExit.exitSpin);
     TExit.shouldExit = true;
-    pthread_mutex_unlock(&TExit.exitMutex);
+    pthread_spin_unlock(&TExit.exitSpin);
+    //pthread_rwlock_unlock(&TExit.exitLock);
 }
 
 void DrawGraphs(Rectangle bounds){
@@ -269,9 +275,9 @@ void FreeProphiler(){
     for(int i = 0; i < SANone; ++i)
         if(graphData[i])
             free(graphData[i]);
-    pthread_mutex_destroy(&mutex);
-    pthread_mutex_destroy(&TExit.exitMutex);
-    pthread_rwlock_destroy(&tiLock);
+    pthread_spin_destroy(&gdSpin);
+    //pthread_rwlock_destroy(&TExit.exitLock);
+    pthread_spin_destroy(&TExit.exitSpin);
     pthread_attr_destroy(&pattr);
     for(int i = 0; i < MAXTHREADS; ++i)
         FreeInputArray(&tInput[i].arr);
