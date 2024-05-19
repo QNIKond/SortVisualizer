@@ -156,7 +156,7 @@ void DrawGraphBack(Rectangle bounds){
     DrawLineEx((Vector2) {bounds.x, bounds.y+bounds.height},(Vector2) {bounds.x+bounds.width, bounds.y + bounds.height},AXISTHICKNESS, AXISCOLOR);
     GuiLabel((Rectangle) {bounds.x - 90, bounds.y - 35, 180, 24},"Execution time (ms)");
     GuiLabel((Rectangle) {bounds.x+bounds.width, bounds.y+bounds.height-12, 100, 24},"Array size");
-    double r = bounds.height/gdMaxValue;
+    double r = bounds.height/(gdMaxValue/1000000);
     double vdivy;
     if(!sc.graph.staticY) {
         double t = pow(10, floor(log10(MINSUBDIVHEIGHT / r)));
@@ -165,7 +165,7 @@ void DrawGraphBack(Rectangle bounds){
             vdivy = 1;
     }
     else{
-        vdivy = gdMaxValue/(bounds.height/MINSUBDIVHEIGHT);
+        vdivy = (gdMaxValue/1000000)/(bounds.height/MINSUBDIVHEIGHT);
     }
     int i = 0;
     while(i * vdivy * r <= bounds.height+1){
@@ -181,11 +181,11 @@ void DrawGraphBack(Rectangle bounds){
         ++i;
     }
     int hsdCount = bounds.width/MINSUBDIVWIDTH;
-    for(int i = 1; i <= hsdCount; ++i){
-        Vector2 pnt = {bounds.x + MINSUBDIVWIDTH*i-2,bounds.y+bounds.height-5};
+    for(int j = 1; j <= hsdCount; ++j){
+        Vector2 pnt = {bounds.x + MINSUBDIVWIDTH*j-2,bounds.y+bounds.height-5};
         DrawRectangle(pnt.x-2,pnt.y-5,4,10,SUBAXISCOLOR);
         char val[20];
-        itoa(sc.proph.maxSize/hsdCount*i,val,10);
+        itoa(sc.proph.maxSize/hsdCount*j,val,10);
         GuiLabel((Rectangle){pnt.x-30,pnt.y+12,60,24},val);
     }
 }
