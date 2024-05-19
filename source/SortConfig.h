@@ -83,6 +83,7 @@ typedef struct{
     struct {
         Color graphColors[SANone];
         bool staticY;
+        bool blackWhiteMode;
     } graph;
 
     bool runBtn;

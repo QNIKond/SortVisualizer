@@ -7,7 +7,7 @@
 #define BIGBUTTONHEIGHT (LINEHEIGHT*1.5)
 #define VPADDING 3
 #define VISLINESCOUNT 9//21
-#define PROPHLINESCOUNT 14//21
+#define PROPHLINESCOUNT 15//21
 #define TEXTBOXWIDTH 40
 #define PADDING 10
 #define ALARMCOLOR 0xDD1111FF
@@ -223,6 +223,7 @@ void UpdateDrawProphTab(SConfig *sconf, Rectangle bounds){
     bounds.y += LINEHEIGHT*(PROPHLINESCOUNT + sconf->proph.saCount - (sconf->proph.saCount == SANone));
     DrawProphButton(sconf,&bounds);
     GuiSetStyle(DEFAULT,TEXT_ALIGNMENT,TEXT_ALIGN_LEFT);
+    UpdateDrawCheckBox(&bounds,"Black and white graph",&sconf->graph.blackWhiteMode);
     UpdateDrawCheckBox(&bounds,"Static Y axis",&sconf->graph.staticY);
     sconf->proph.updated |= UpdateDrawSlider(&bounds, "Threads count:", &sconf->proph.threads, 1, 24, id++);
     sconf->proph.updated |= UpdateDrawSlider(&bounds, "Average from:", &sconf->proph.average, 1, 100, id++);

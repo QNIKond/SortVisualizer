@@ -150,10 +150,11 @@ void StartSortingThreads(){
 #define MINSUBDIVHEIGHT 40
 #define MINSUBDIVWIDTH 80
 
+#define IFNBNW(X, Y)(sc.graph.blackWhiteMode ? (Y) : (X))
 void DrawGraphBack(Rectangle bounds){
-    DrawRectangleRec(bounds,BGCOLOR);
-    DrawLineEx((Vector2) {bounds.x, bounds.y},(Vector2) {bounds.x, bounds.y + bounds.height},AXISTHICKNESS, AXISCOLOR);
-    DrawLineEx((Vector2) {bounds.x, bounds.y+bounds.height},(Vector2) {bounds.x+bounds.width, bounds.y + bounds.height},AXISTHICKNESS, AXISCOLOR);
+    DrawRectangleRec(bounds, IFNBNW(BGCOLOR, WHITE));
+    DrawLineEx((Vector2) {bounds.x, bounds.y},(Vector2) {bounds.x, bounds.y + bounds.height},AXISTHICKNESS, IFNBNW(AXISCOLOR, BLACK));
+    DrawLineEx((Vector2) {bounds.x, bounds.y+bounds.height},(Vector2) {bounds.x+bounds.width, bounds.y + bounds.height},AXISTHICKNESS, IFNBNW(AXISCOLOR, BLACK));
     GuiLabel((Rectangle) {bounds.x - 90, bounds.y - 35, 180, 24},"Execution time (ms)");
     GuiLabel((Rectangle) {bounds.x+bounds.width, bounds.y+bounds.height-12, 100, 24},"Array size");
     double r = bounds.height/(gdMaxValue/1000000);
@@ -177,13 +178,13 @@ void DrawGraphBack(Rectangle bounds){
         char val[20];
         itoa(i*vdivy,val,10);
         GuiLabel((Rectangle){bounds.x-40,y-12,40,24},val);
-        DrawLine(bounds.x,y, bounds.x + bounds.width, y, SUBAXISCOLOR);
+        DrawLine(bounds.x,y, bounds.x + bounds.width, y, IFNBNW(SUBAXISCOLOR, GRAY));
         ++i;
     }
     int hsdCount = bounds.width/MINSUBDIVWIDTH;
     for(int j = 1; j <= hsdCount; ++j){
         Vector2 pnt = {bounds.x + MINSUBDIVWIDTH*j-2,bounds.y+bounds.height-5};
-        DrawRectangle(pnt.x-2,pnt.y-5,4,10,SUBAXISCOLOR);
+        DrawRectangle(pnt.x-2,pnt.y-5,4,10,IFNBNW(SUBAXISCOLOR, GRAY));
         char val[20];
         itoa(sc.proph.maxSize/hsdCount*j,val,10);
         GuiLabel((Rectangle){pnt.x-30,pnt.y+12,60,24},val);
@@ -204,9 +205,9 @@ void DrawGraph(Rectangle bounds, int graph){
             break;
         Vector2 dot = {i*stepX+bounds.x,bounds.height-graphData[graph][i]*stepY+bounds.y};
         if(gdFilled<=50)
-            DrawCircleV(dot,DOTRADIUS,sc.graph.graphColors[graph]);
+            DrawCircleV(dot,DOTRADIUS, IFNBNW(sc.graph.graphColors[graph],BLACK));
         if(prevDot.x) {
-            DrawLineEx(prevDot, dot, LINETHICKNESS, sc.graph.graphColors[graph]);
+            DrawLineEx(prevDot, dot, LINETHICKNESS, IFNBNW(sc.graph.graphColors[graph],BLACK));
         }
         prevDot = dot;
     }
@@ -231,15 +232,25 @@ void StopThreads(){
 }
 
 void DrawGraphs(Rectangle bounds){
+    int defaultTextColor;
+    if(sc.graph.blackWhiteMode) {
+        defaultTextColor = GuiGetStyle(LABEL, TEXT_COLOR_NORMAL);
+        GuiSetStyle(LABEL, TEXT_COLOR_NORMAL, ColorToInt(BLACK));
+    }
     DrawGraphBack(bounds);
     if(gdFilled) {
         for(int i = 0; i < sc.proph.saCount; ++i)
             DrawGraph(bounds, i);
     }
+    if(sc.graph.blackWhiteMode)
+        GuiSetStyle(LABEL, TEXT_COLOR_NORMAL, defaultTextColor);
 }
 
 #define PROPHPADDING 120
 void UpdateDrawProphiler(Rectangle bounds){
+    if(sc.graph.blackWhiteMode)
+        DrawRectangleRec(bounds, WHITE);
+
     bounds.x += PROPHPADDING;
     bounds.y += PROPHPADDING;
     bounds.width -= 2 * PROPHPADDING;
