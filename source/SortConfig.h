@@ -5,7 +5,9 @@
     SMACRO(Insertion)       \
     SMACRO(Shell)           \
     SMACRO(Bubble)          \
-    SMACRO(Shaker)
+    SMACRO(Shaker)          \
+    SMACRO(Heap)
+
 
 
 typedef enum {

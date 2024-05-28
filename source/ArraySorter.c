@@ -164,6 +164,7 @@ int StepInsertionSort(InputArray *input, SortData *data) {
 }
 
 void ShellSort(InputArray *input) {
+    return;
     for (int s = input->filled / 2; s > 0; s /= 2) {
         for (int i = s; i < input->filled; ++i) {
             for (int j = i - s; j >= 0 && input->arr[j] > input->arr[j + s]; j -= s) {
@@ -199,6 +200,40 @@ int StepShellSort(InputArray *input, SortData *data){
         data->stepJ -= data->stepS;
     }
     return 0;
+}
+
+void BuildHeap(int arr[], int n, int i) {
+    int largest = i;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
+
+    if ((left < n) && (arr[left] > arr[largest]))
+        largest = left;
+    if ((right < n) && (arr[right] > arr[largest]))
+        largest = right;
+
+    if (largest != i) {
+        int t = arr[i];
+        arr[i] = arr[largest];
+        arr[largest] = t;
+        BuildHeap(arr, n, largest);
+    }
+}
+
+void HeapSort(InputArray *input){
+    for (int i = input->filled / 2 - 1; i >= 0; i--)
+        BuildHeap(input->arr, input->filled, i);
+
+    for (int i = input->filled - 1; i >= 0; i--) {
+        int t = input->arr[0];
+        input->arr[0] = input->arr[i];
+        input->arr[i] = t;
+        BuildHeap(input->arr, i, 0);
+    }
+}
+
+int StepHeapSort(InputArray *input, SortData *data){
+    return 1;
 }
 
 int StepSortArray(SortingAlgorithm alg, InputArray *input, SortData *data) {
